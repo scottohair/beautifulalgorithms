@@ -1,0 +1,13 @@
+{
+  "name": "aesthetic-algorithm-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node config.js",
+    "clean": "rm -rf build"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4.3.0"
+  }
+}

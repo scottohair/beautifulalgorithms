@@ -1,0 +1,11 @@
+{
+  "blur": {
+    "none": { "value": "0", "type": "blur" },
+    "sm": { "value": "4", "type": "blur" },
+    "md": { "value": "8", "type": "blur" },
+    "lg": { "value": "16", "type": "blur" },
+    "xl": { "value": "24", "type": "blur" },
+    "glass": { "value": "20", "type": "blur", "description": "Standard glassmorphism blur" },
+    "glass-heavy": { "value": "40", "type": "blur", "description": "Heavy glassmorphism blur" }
+  }
+}

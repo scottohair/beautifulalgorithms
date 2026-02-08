@@ -1,0 +1,104 @@
+{
+  "id": "bubble-sort",
+  "name": "Bubble Sort",
+  "category": "sorting",
+  "description": "A simple comparison-based sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order.",
+  "complexity": {
+    "time": {
+      "best": "O(n)",
+      "average": "O(n²)",
+      "worst": "O(n²)"
+    },
+    "space": "O(1)"
+  },
+  "stable": true,
+  "inPlace": true,
+  "pseudocode": [
+    { "line": 0, "text": "procedure bubbleSort(A: list)" },
+    { "line": 1, "text": "  n ← length(A)" },
+    { "line": 2, "text": "  for i ← 0 to n-1 do" },
+    { "line": 3, "text": "    swapped ← false" },
+    { "line": 4, "text": "    for j ← 0 to n-i-2 do" },
+    { "line": 5, "text": "      if A[j] > A[j+1] then" },
+    { "line": 6, "text": "        swap(A[j], A[j+1])" },
+    { "line": 7, "text": "        swapped ← true" },
+    { "line": 8, "text": "    if not swapped then" },
+    { "line": 9, "text": "      break" },
+    { "line": 10, "text": "  return A" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing two adjacent elements",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Swapping two elements",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element placed in final position",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "pass-complete",
+      "description": "One pass through the array completed"
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": { "type": "number" },
+    "minLength": 2,
+    "maxLength": 50,
+    "default": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33]
+  },
+  "stateSchema": {
+    "array": { "type": "array", "items": { "type": "number" } },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "sortedIndices": { "type": "array", "items": { "type": "number" } },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Already sorted",
+      "input": [1, 2, 3, 4, 5],
+      "expected": [1, 2, 3, 4, 5],
+      "expectedStepCount": 4
+    },
+    {
+      "name": "Reverse sorted",
+      "input": [5, 4, 3, 2, 1],
+      "expected": [1, 2, 3, 4, 5],
+      "expectedStepCount": 20
+    },
+    {
+      "name": "Single swap needed",
+      "input": [2, 1],
+      "expected": [1, 2],
+      "expectedStepCount": 2
+    },
+    {
+      "name": "With duplicates",
+      "input": [3, 1, 4, 1, 5],
+      "expected": [1, 1, 3, 4, 5],
+      "expectedStepCount": 12
+    },
+    {
+      "name": "Default input",
+      "input": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33],
+      "expected": [11, 12, 22, 25, 33, 34, 45, 64, 78, 90]
+    }
+  ]
+}

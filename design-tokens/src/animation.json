@@ -1,0 +1,26 @@
+{
+  "animation": {
+    "duration": {
+      "instant": { "value": "100", "type": "duration", "description": "Instant feedback (ms)" },
+      "fast": { "value": "200", "type": "duration", "description": "Quick transitions (ms)" },
+      "normal": { "value": "300", "type": "duration", "description": "Standard transitions (ms)" },
+      "slow": { "value": "500", "type": "duration", "description": "Emphasized transitions (ms)" },
+      "visualization": { "value": "400", "type": "duration", "description": "Algorithm step animation (ms)" },
+      "swap": { "value": "350", "type": "duration", "description": "Element swap animation (ms)" },
+      "compare": { "value": "250", "type": "duration", "description": "Element compare highlight (ms)" }
+    },
+    "easing": {
+      "default": { "value": "cubic-bezier(0.4, 0, 0.2, 1)", "type": "easing" },
+      "in": { "value": "cubic-bezier(0.4, 0, 1, 1)", "type": "easing" },
+      "out": { "value": "cubic-bezier(0, 0, 0.2, 1)", "type": "easing" },
+      "inOut": { "value": "cubic-bezier(0.4, 0, 0.2, 1)", "type": "easing" },
+      "spring": { "value": "cubic-bezier(0.175, 0.885, 0.32, 1.275)", "type": "easing" },
+      "bounce": { "value": "cubic-bezier(0.68, -0.55, 0.265, 1.55)", "type": "easing" }
+    },
+    "speed": {
+      "min": { "value": "0.25", "type": "number", "description": "Minimum playback speed" },
+      "default": { "value": "1.0", "type": "number", "description": "Default playback speed" },
+      "max": { "value": "8.0", "type": "number", "description": "Maximum playback speed" }
+    }
+  }
+}

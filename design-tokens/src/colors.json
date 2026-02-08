@@ -1,0 +1,48 @@
+{
+  "color": {
+    "background": {
+      "primary": { "value": "#0a0a0b", "type": "color", "description": "Main app background" },
+      "secondary": { "value": "#111114", "type": "color", "description": "Card/panel background" },
+      "tertiary": { "value": "#1a1a1f", "type": "color", "description": "Elevated surface" },
+      "glass": { "value": "rgba(255, 255, 255, 0.05)", "type": "color", "description": "Glassmorphism fill" },
+      "glass-hover": { "value": "rgba(255, 255, 255, 0.08)", "type": "color", "description": "Glassmorphism hover" },
+      "glass-active": { "value": "rgba(255, 255, 255, 0.12)", "type": "color", "description": "Glassmorphism active" }
+    },
+    "text": {
+      "primary": { "value": "#f5f5f7", "type": "color", "description": "Primary text" },
+      "secondary": { "value": "#a1a1aa", "type": "color", "description": "Secondary/muted text" },
+      "tertiary": { "value": "#71717a", "type": "color", "description": "Disabled/hint text" },
+      "inverse": { "value": "#0a0a0b", "type": "color", "description": "Text on light backgrounds" }
+    },
+    "border": {
+      "default": { "value": "rgba(255, 255, 255, 0.08)", "type": "color", "description": "Default border" },
+      "subtle": { "value": "rgba(255, 255, 255, 0.04)", "type": "color", "description": "Subtle border" },
+      "strong": { "value": "rgba(255, 255, 255, 0.16)", "type": "color", "description": "Strong border" }
+    },
+    "accent": {
+      "cyan": { "value": "#00f0ff", "type": "color", "description": "Primary accent - cyan neon" },
+      "purple": { "value": "#a855f7", "type": "color", "description": "Secondary accent - purple" },
+      "pink": { "value": "#ec4899", "type": "color", "description": "Tertiary accent - pink" },
+      "green": { "value": "#10b981", "type": "color", "description": "Success/positive accent" },
+      "orange": { "value": "#f97316", "type": "color", "description": "Warning accent" },
+      "red": { "value": "#ef4444", "type": "color", "description": "Error/destructive accent" }
+    },
+    "visualization": {
+      "comparing": { "value": "#00f0ff", "type": "color", "description": "Elements being compared" },
+      "swapping": { "value": "#ec4899", "type": "color", "description": "Elements being swapped" },
+      "sorted": { "value": "#10b981", "type": "color", "description": "Elements in final position" },
+      "active": { "value": "#a855f7", "type": "color", "description": "Currently active element" },
+      "pivot": { "value": "#f97316", "type": "color", "description": "Pivot element" },
+      "visited": { "value": "#6366f1", "type": "color", "description": "Visited node/element" },
+      "path": { "value": "#fbbf24", "type": "color", "description": "Path/route highlight" },
+      "default": { "value": "#3f3f46", "type": "color", "description": "Default/unsorted element" },
+      "inactive": { "value": "#27272a", "type": "color", "description": "Inactive/dimmed element" }
+    },
+    "glow": {
+      "cyan": { "value": "rgba(0, 240, 255, 0.4)", "type": "color", "description": "Cyan glow effect" },
+      "purple": { "value": "rgba(168, 85, 247, 0.4)", "type": "color", "description": "Purple glow effect" },
+      "pink": { "value": "rgba(236, 72, 153, 0.4)", "type": "color", "description": "Pink glow effect" },
+      "green": { "value": "rgba(16, 185, 129, 0.4)", "type": "color", "description": "Green glow effect" }
+    }
+  }
+}

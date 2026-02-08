@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+design-tokens/build/
+web/.next/
+web/out/
+bridge/dist/
+*.js.map
+
+# Generated files (committed selectively)
+# apple/AestheticAlgorithm/Generated/ - committed for Xcode builds
+# web/src/generated/ - committed for CI builds
+
+# Environment
+.env
+.env.local
+.env.*.local
+bridge/.env
+
+# IDE
+.vscode/
+.idea/
+*.xcuserdata
+*.xcworkspace/xcuserdata/
+DerivedData/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Swift
+*.swp
+*.swo
+build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Testing
+coverage/
+*.lcov
+.nyc_output/
+
+# Misc
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.turbo/
