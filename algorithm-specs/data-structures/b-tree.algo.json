@@ -1,0 +1,179 @@
+{
+  "id": "b-tree",
+  "name": "B-Tree",
+  "category": "data-structures",
+  "description": "A self-balancing tree data structure that maintains sorted data and allows searches, insertions, and deletions in logarithmic time. Unlike binary trees, each node can contain multiple keys and have multiple children. This order-3 B-tree (2-3 tree) allows each node to hold 1-2 keys and have 2-3 children. Nodes are split when they exceed capacity, and the tree grows upward from the root.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "search": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "delete": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure search(node, key)" },
+    { "line": 1, "text": "  i ← 0" },
+    { "line": 2, "text": "  while i < node.numKeys and key > node.keys[i] do" },
+    { "line": 3, "text": "    i ← i + 1" },
+    { "line": 4, "text": "  if i < node.numKeys and key = node.keys[i] then" },
+    { "line": 5, "text": "    return FOUND" },
+    { "line": 6, "text": "  if node.isLeaf then return NOT_FOUND" },
+    { "line": 7, "text": "  return search(node.children[i], key)" },
+    { "line": 8, "text": "" },
+    { "line": 9, "text": "procedure insert(root, key)" },
+    { "line": 10, "text": "  if root is full then" },
+    { "line": 11, "text": "    newRoot ← new Node()" },
+    { "line": 12, "text": "    newRoot.children[0] ← root" },
+    { "line": 13, "text": "    splitChild(newRoot, 0)" },
+    { "line": 14, "text": "    root ← newRoot" },
+    { "line": 15, "text": "  insertNonFull(root, key)" },
+    { "line": 16, "text": "" },
+    { "line": 17, "text": "procedure insertNonFull(node, key)" },
+    { "line": 18, "text": "  if node.isLeaf then" },
+    { "line": 19, "text": "    insert key into node.keys in sorted order" },
+    { "line": 20, "text": "  else" },
+    { "line": 21, "text": "    find child index i where key belongs" },
+    { "line": 22, "text": "    if node.children[i] is full then" },
+    { "line": 23, "text": "      splitChild(node, i)" },
+    { "line": 24, "text": "      if key > node.keys[i] then i ← i + 1" },
+    { "line": 25, "text": "    insertNonFull(node.children[i], key)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing a key with keys in the current node",
+      "highlights": {
+        "node": "current",
+        "keyIndex": "i",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a key into a leaf node",
+      "highlights": {
+        "node": "current",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a node during a split operation",
+      "highlights": {
+        "node": "current",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to a child node during search or insertion",
+      "highlights": {
+        "node": "current",
+        "childIndex": "i",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Key found or node confirmed in correct position after split",
+      "highlights": {
+        "node": "current",
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "search"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The key to insert or search for"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 30 },
+      { "operation": "insert", "value": 40 },
+      { "operation": "insert", "value": 50 },
+      { "operation": "insert", "value": 25 },
+      { "operation": "search", "value": 30 }
+    ]
+  },
+  "stateSchema": {
+    "tree": {
+      "type": "object",
+      "description": "The B-tree represented as a nested node structure with keys array and children array",
+      "properties": {
+        "keys": { "type": "array", "items": { "type": "number" } },
+        "children": { "type": "array", "items": { "type": "object" } },
+        "isLeaf": { "type": "boolean" }
+      }
+    },
+    "currentNode": { "type": "object", "description": "The node currently being examined" },
+    "targetValue": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "splitNode": { "type": "object", "description": "The node being split when overflow occurs" },
+    "traversalPath": { "type": "array", "items": { "type": "object" } },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "order": { "type": "number", "default": 3 },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Node splitting",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 30 }
+      ],
+      "description": "Inserting a third key into an order-3 B-tree causes the root to split, promoting the median"
+    },
+    {
+      "name": "Multiple splits",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 60 },
+        { "operation": "insert", "value": 70 }
+      ],
+      "description": "Sequential insertions cause multiple node splits and increase tree height"
+    },
+    {
+      "name": "Search in multi-level tree",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 50 },
+        { "operation": "search", "value": 40 },
+        { "operation": "search", "value": 35 }
+      ],
+      "description": "Search traverses multiple levels to find an existing key and reports not-found for a missing key"
+    }
+  ]
+}

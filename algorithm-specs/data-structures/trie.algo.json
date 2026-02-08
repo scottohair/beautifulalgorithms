@@ -1,0 +1,175 @@
+{
+  "id": "trie",
+  "name": "Trie",
+  "category": "data-structures",
+  "description": "A tree-like data structure (also called a prefix tree) used for efficient retrieval of keys in a dataset of strings. Each node represents a single character, and paths from the root to marked end-of-word nodes form complete keys. Tries excel at prefix-based operations such as autocomplete and spell checking.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "worst": "O(m)",
+        "description": "where m is the length of the key"
+      },
+      "search": {
+        "worst": "O(m)",
+        "description": "where m is the length of the key"
+      },
+      "prefixSearch": {
+        "worst": "O(m + k)",
+        "description": "where m is the prefix length and k is the number of matches"
+      }
+    },
+    "space": "O(n * m)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "class TrieNode" },
+    { "line": 1, "text": "  children ← empty map" },
+    { "line": 2, "text": "  isEndOfWord ← false" },
+    { "line": 3, "text": "" },
+    { "line": 4, "text": "procedure insert(root, word)" },
+    { "line": 5, "text": "  current ← root" },
+    { "line": 6, "text": "  for each character ch in word do" },
+    { "line": 7, "text": "    if ch not in current.children then" },
+    { "line": 8, "text": "      current.children[ch] ← new TrieNode()" },
+    { "line": 9, "text": "    current ← current.children[ch]" },
+    { "line": 10, "text": "  current.isEndOfWord ← true" },
+    { "line": 11, "text": "" },
+    { "line": 12, "text": "procedure search(root, word)" },
+    { "line": 13, "text": "  current ← root" },
+    { "line": 14, "text": "  for each character ch in word do" },
+    { "line": 15, "text": "    if ch not in current.children then" },
+    { "line": 16, "text": "      return NOT_FOUND" },
+    { "line": 17, "text": "    current ← current.children[ch]" },
+    { "line": 18, "text": "  return current.isEndOfWord" },
+    { "line": 19, "text": "" },
+    { "line": 20, "text": "procedure prefixSearch(root, prefix)" },
+    { "line": 21, "text": "  current ← root" },
+    { "line": 22, "text": "  for each character ch in prefix do" },
+    { "line": 23, "text": "    if ch not in current.children then" },
+    { "line": 24, "text": "      return empty list" },
+    { "line": 25, "text": "    current ← current.children[ch]" },
+    { "line": 26, "text": "  return collectAllWords(current, prefix)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Checking if a character exists in the current node's children",
+      "highlights": {
+        "node": "current",
+        "character": "ch",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Creating a new trie node for a character",
+      "highlights": {
+        "node": "new",
+        "character": "ch",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to a child node for the next character",
+      "highlights": {
+        "node": "current",
+        "character": "ch",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Marking a node as end of word or highlighting during prefix search",
+      "highlights": {
+        "node": "current",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Word fully inserted or found in the trie",
+      "highlights": {
+        "node": "current",
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "search", "prefixSearch"]
+        },
+        "value": {
+          "type": "string",
+          "description": "The word to insert, search for, or use as prefix"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": "apple" },
+      { "operation": "insert", "value": "app" },
+      { "operation": "insert", "value": "ape" },
+      { "operation": "insert", "value": "bat" },
+      { "operation": "insert", "value": "ball" },
+      { "operation": "search", "value": "app" },
+      { "operation": "prefixSearch", "value": "ap" }
+    ]
+  },
+  "stateSchema": {
+    "trie": {
+      "type": "object",
+      "description": "The trie represented as a nested node structure with children map and isEndOfWord flag"
+    },
+    "currentNode": { "type": "object", "description": "The node currently being examined" },
+    "currentWord": { "type": "string", "description": "The word being inserted or searched" },
+    "currentCharIndex": { "type": "number", "description": "Index of the current character being processed" },
+    "currentOperation": { "type": "string" },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "prefixMatches": { "type": "array", "items": { "type": "string" }, "description": "Words matching the prefix search" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Insert and search words",
+      "input": [
+        { "operation": "insert", "value": "cat" },
+        { "operation": "insert", "value": "car" },
+        { "operation": "insert", "value": "card" },
+        { "operation": "search", "value": "car" },
+        { "operation": "search", "value": "ca" }
+      ],
+      "description": "Search for a complete word (found) and a prefix that is not a word (not found)"
+    },
+    {
+      "name": "Prefix search",
+      "input": [
+        { "operation": "insert", "value": "apple" },
+        { "operation": "insert", "value": "app" },
+        { "operation": "insert", "value": "application" },
+        { "operation": "insert", "value": "banana" },
+        { "operation": "prefixSearch", "value": "app" }
+      ],
+      "expectedPrefixMatches": ["app", "apple", "application"],
+      "description": "Prefix search returns all words starting with the given prefix"
+    },
+    {
+      "name": "Overlapping words",
+      "input": [
+        { "operation": "insert", "value": "the" },
+        { "operation": "insert", "value": "them" },
+        { "operation": "insert", "value": "there" },
+        { "operation": "insert", "value": "their" },
+        { "operation": "search", "value": "the" },
+        { "operation": "search", "value": "they" }
+      ],
+      "description": "Words sharing common prefixes are stored efficiently; 'the' is found but 'they' is not"
+    }
+  ]
+}

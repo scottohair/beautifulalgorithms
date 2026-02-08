@@ -23,6 +23,11 @@ const algorithms = [
       { id: 'linked-list', name: 'Linked List', complexity: 'O(n)' },
       { id: 'avl-tree', name: 'AVL Tree', complexity: 'O(log n)' },
       { id: 'hash-table', name: 'Hash Table', complexity: 'O(1)' },
+      { id: 'red-black-tree', name: 'Red-Black Tree', complexity: 'O(log n)' },
+      { id: 'splay-tree', name: 'Splay Tree', complexity: 'O(log n)' },
+      { id: 'trie', name: 'Trie', complexity: 'O(m)' },
+      { id: 'b-tree', name: 'B-Tree', complexity: 'O(log n)' },
+      { id: 'min-heap', name: 'Min Heap', complexity: 'O(log n)' },
     ],
   },
   {
@@ -31,6 +36,9 @@ const algorithms = [
     items: [
       { id: 'bfs', name: 'Breadth-First Search', complexity: 'O(V+E)' },
       { id: 'dfs', name: 'Depth-First Search', complexity: 'O(V+E)' },
+      { id: 'dijkstra', name: "Dijkstra's Algorithm", complexity: 'O((V+E) log V)' },
+      { id: 'prim', name: "Prim's Algorithm", complexity: 'O((V+E) log V)' },
+      { id: 'kruskal', name: "Kruskal's Algorithm", complexity: 'O(E log E)' },
     ],
   },
 ];

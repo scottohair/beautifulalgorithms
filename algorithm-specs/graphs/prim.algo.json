@@ -1,0 +1,198 @@
+{
+  "id": "prim",
+  "name": "Prim's Algorithm",
+  "category": "graph",
+  "description": "A greedy algorithm that finds a minimum spanning tree for a weighted undirected graph. Starting from an arbitrary vertex, it repeatedly adds the cheapest edge that connects a vertex in the growing tree to a vertex outside it, using a priority queue to efficiently select the minimum weight edge at each step.",
+  "complexity": {
+    "time": {
+      "worst": "O((V + E) log V)"
+    },
+    "space": "O(V)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure prim(graph, start)" },
+    { "line": 1, "text": "  MST ← empty set of edges" },
+    { "line": 2, "text": "  inMST ← set containing start" },
+    { "line": 3, "text": "  PQ ← priority queue" },
+    { "line": 4, "text": "  for each edge (start, v, weight) do" },
+    { "line": 5, "text": "    PQ.insert(weight, (start, v))" },
+    { "line": 6, "text": "  while PQ is not empty and |inMST| < |V| do" },
+    { "line": 7, "text": "    (w, (u, v)) ← PQ.extractMin()" },
+    { "line": 8, "text": "    if v in inMST then continue" },
+    { "line": 9, "text": "    MST.add((u, v, w))" },
+    { "line": 10, "text": "    inMST.add(v)" },
+    { "line": 11, "text": "    for each edge (v, neighbor, weight) do" },
+    { "line": 12, "text": "      if neighbor not in inMST then" },
+    { "line": 13, "text": "        PQ.insert(weight, (v, neighbor))" },
+    { "line": 14, "text": "  return MST" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing edge weights to find the minimum cost edge",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting the minimum weight edge from the priority queue",
+      "highlights": {
+        "edge": ["u", "v"],
+        "node": "v",
+        "color": "selected"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Examining a neighboring edge for potential inclusion in the MST",
+      "highlights": {
+        "edge": ["current", "neighbor"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Exploring edges from the newly added vertex",
+      "highlights": {
+        "node": "current",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Edge confirmed as part of the minimum spanning tree",
+      "highlights": {
+        "edge": ["u", "v"],
+        "node": "v",
+        "color": "visited"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Adding a candidate edge to the priority queue",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "inserting"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "adjacencyList": {
+        "type": "object",
+        "description": "Weighted undirected graph as adjacency list mapping node IDs to arrays of {node, weight} objects",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "node": { "type": "string" },
+              "weight": { "type": "number" }
+            },
+            "required": ["node", "weight"]
+          }
+        }
+      },
+      "startNode": {
+        "type": "string",
+        "description": "The vertex to start building the MST from"
+      }
+    },
+    "required": ["adjacencyList", "startNode"],
+    "default": {
+      "adjacencyList": {
+        "A": [{ "node": "B", "weight": 4 }, { "node": "C", "weight": 2 }],
+        "B": [{ "node": "A", "weight": 4 }, { "node": "C", "weight": 1 }, { "node": "D", "weight": 5 }],
+        "C": [{ "node": "A", "weight": 2 }, { "node": "B", "weight": 1 }, { "node": "D", "weight": 8 }, { "node": "E", "weight": 10 }],
+        "D": [{ "node": "B", "weight": 5 }, { "node": "C", "weight": 8 }, { "node": "E", "weight": 2 }],
+        "E": [{ "node": "C", "weight": 10 }, { "node": "D", "weight": 2 }]
+      },
+      "startNode": "A"
+    }
+  },
+  "stateSchema": {
+    "graph": {
+      "type": "object",
+      "description": "The weighted adjacency list representation of the graph"
+    },
+    "mstEdges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "weight": { "type": "number" }
+        }
+      },
+      "description": "Edges included in the minimum spanning tree so far"
+    },
+    "inMST": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Set of vertices currently in the MST"
+    },
+    "priorityQueue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "weight": { "type": "number" }
+        }
+      },
+      "description": "Priority queue of candidate edges"
+    },
+    "currentNode": { "type": "string" },
+    "totalWeight": { "type": "number" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Simple connected graph",
+      "input": {
+        "adjacencyList": {
+          "A": [{ "node": "B", "weight": 4 }, { "node": "C", "weight": 2 }],
+          "B": [{ "node": "A", "weight": 4 }, { "node": "C", "weight": 1 }, { "node": "D", "weight": 5 }],
+          "C": [{ "node": "A", "weight": 2 }, { "node": "B", "weight": 1 }, { "node": "D", "weight": 8 }, { "node": "E", "weight": 10 }],
+          "D": [{ "node": "B", "weight": 5 }, { "node": "C", "weight": 8 }, { "node": "E", "weight": 2 }],
+          "E": [{ "node": "C", "weight": 10 }, { "node": "D", "weight": 2 }]
+        },
+        "startNode": "A"
+      },
+      "expectedMSTWeight": 10,
+      "description": "MST connects all 5 vertices with minimum total weight of 10 (A-C:2, C-B:1, B-D:5, D-E:2)"
+    },
+    {
+      "name": "Triangle graph",
+      "input": {
+        "adjacencyList": {
+          "X": [{ "node": "Y", "weight": 3 }, { "node": "Z", "weight": 5 }],
+          "Y": [{ "node": "X", "weight": 3 }, { "node": "Z", "weight": 4 }],
+          "Z": [{ "node": "X", "weight": 5 }, { "node": "Y", "weight": 4 }]
+        },
+        "startNode": "X"
+      },
+      "expectedMSTWeight": 7,
+      "description": "MST of a triangle selects the two cheapest edges (X-Y:3, Y-Z:4), skipping the heaviest"
+    },
+    {
+      "name": "Graph with equal weight edges",
+      "input": {
+        "adjacencyList": {
+          "A": [{ "node": "B", "weight": 1 }, { "node": "C", "weight": 1 }],
+          "B": [{ "node": "A", "weight": 1 }, { "node": "C", "weight": 1 }, { "node": "D", "weight": 1 }],
+          "C": [{ "node": "A", "weight": 1 }, { "node": "B", "weight": 1 }, { "node": "D", "weight": 1 }],
+          "D": [{ "node": "B", "weight": 1 }, { "node": "C", "weight": 1 }]
+        },
+        "startNode": "A"
+      },
+      "expectedMSTWeight": 3,
+      "description": "When all edges have equal weight, any spanning tree is a minimum spanning tree with weight V-1"
+    }
+  ]
+}

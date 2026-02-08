@@ -20,7 +20,15 @@ class VisualizationViewModel {
         AVLTreeAlgorithm(),
         HashTableAlgorithm(),
         BFSAlgorithm(),
-        DFSAlgorithm()
+        DFSAlgorithm(),
+        RedBlackTreeAlgorithm(),
+        SplayTreeAlgorithm(),
+        TrieAlgorithm(),
+        BTreeAlgorithm(),
+        MinHeapAlgorithm(),
+        DijkstraAlgorithm(),
+        PrimAlgorithm(),
+        KruskalAlgorithm()
     ]
 
     func selectAlgorithm(_ algorithm: any AlgorithmExecutable) {

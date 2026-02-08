@@ -1,0 +1,181 @@
+{
+  "id": "kruskal",
+  "name": "Kruskal's Algorithm",
+  "category": "graph",
+  "description": "A greedy algorithm that finds a minimum spanning tree for a weighted undirected graph. It sorts all edges by weight and iteratively adds the cheapest edge that does not form a cycle, using a union-find (disjoint set) data structure to efficiently detect cycles. The algorithm continues until the spanning tree contains V-1 edges.",
+  "complexity": {
+    "time": {
+      "worst": "O(E log E)"
+    },
+    "space": "O(V)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure kruskal(graph)" },
+    { "line": 1, "text": "  MST ← empty set of edges" },
+    { "line": 2, "text": "  edges ← all edges of graph sorted by weight" },
+    { "line": 3, "text": "  UF ← UnionFind with each vertex in its own set" },
+    { "line": 4, "text": "  for each edge (u, v, weight) in edges do" },
+    { "line": 5, "text": "    if UF.find(u) ≠ UF.find(v) then" },
+    { "line": 6, "text": "      MST.add((u, v, weight))" },
+    { "line": 7, "text": "      UF.union(u, v)" },
+    { "line": 8, "text": "    if |MST| = |V| - 1 then break" },
+    { "line": 9, "text": "  return MST" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Checking if two vertices belong to different sets using union-find",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting the next cheapest edge from the sorted edge list",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "selected"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Rejecting an edge because it would form a cycle",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Edge confirmed as part of the minimum spanning tree",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "visited"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Performing union of two disjoint sets after adding an edge",
+      "highlights": {
+        "edge": ["u", "v"],
+        "color": "inserting"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "edges": {
+        "type": "array",
+        "description": "List of weighted edges in the graph",
+        "items": {
+          "type": "object",
+          "properties": {
+            "from": { "type": "string" },
+            "to": { "type": "string" },
+            "weight": { "type": "number" }
+          },
+          "required": ["from", "to", "weight"]
+        }
+      },
+      "vertices": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "List of all vertex IDs in the graph"
+      }
+    },
+    "required": ["edges", "vertices"],
+    "default": {
+      "edges": [
+        { "from": "A", "to": "B", "weight": 4 },
+        { "from": "A", "to": "C", "weight": 2 },
+        { "from": "B", "to": "C", "weight": 1 },
+        { "from": "B", "to": "D", "weight": 5 },
+        { "from": "C", "to": "D", "weight": 8 },
+        { "from": "C", "to": "E", "weight": 10 },
+        { "from": "D", "to": "E", "weight": 2 }
+      ],
+      "vertices": ["A", "B", "C", "D", "E"]
+    }
+  },
+  "stateSchema": {
+    "edges": {
+      "type": "array",
+      "description": "All edges sorted by weight"
+    },
+    "mstEdges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "weight": { "type": "number" }
+        }
+      },
+      "description": "Edges included in the minimum spanning tree so far"
+    },
+    "unionFind": {
+      "type": "object",
+      "description": "The disjoint set (union-find) structure tracking connected components",
+      "additionalProperties": { "type": "string" }
+    },
+    "currentEdgeIndex": { "type": "number" },
+    "totalWeight": { "type": "number" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Simple connected graph",
+      "input": {
+        "edges": [
+          { "from": "A", "to": "B", "weight": 4 },
+          { "from": "A", "to": "C", "weight": 2 },
+          { "from": "B", "to": "C", "weight": 1 },
+          { "from": "B", "to": "D", "weight": 5 },
+          { "from": "C", "to": "D", "weight": 8 },
+          { "from": "C", "to": "E", "weight": 10 },
+          { "from": "D", "to": "E", "weight": 2 }
+        ],
+        "vertices": ["A", "B", "C", "D", "E"]
+      },
+      "expectedMSTWeight": 10,
+      "description": "Kruskal selects edges B-C:1, A-C:2, D-E:2, B-D:5 for a total MST weight of 10"
+    },
+    {
+      "name": "Cycle detection",
+      "input": {
+        "edges": [
+          { "from": "A", "to": "B", "weight": 1 },
+          { "from": "B", "to": "C", "weight": 2 },
+          { "from": "A", "to": "C", "weight": 3 }
+        ],
+        "vertices": ["A", "B", "C"]
+      },
+      "expectedMSTWeight": 3,
+      "description": "Edge A-C is rejected because it would form a cycle after A-B and B-C are added"
+    },
+    {
+      "name": "Larger graph with multiple rejected edges",
+      "input": {
+        "edges": [
+          { "from": "A", "to": "B", "weight": 7 },
+          { "from": "A", "to": "D", "weight": 5 },
+          { "from": "B", "to": "C", "weight": 8 },
+          { "from": "B", "to": "D", "weight": 9 },
+          { "from": "B", "to": "E", "weight": 7 },
+          { "from": "C", "to": "E", "weight": 5 },
+          { "from": "D", "to": "E", "weight": 15 },
+          { "from": "D", "to": "F", "weight": 6 },
+          { "from": "E", "to": "F", "weight": 8 },
+          { "from": "E", "to": "G", "weight": 9 },
+          { "from": "F", "to": "G", "weight": 11 }
+        ],
+        "vertices": ["A", "B", "C", "D", "E", "F", "G"]
+      },
+      "expectedMSTWeight": 39,
+      "description": "Multiple edges are rejected due to cycle formation as the MST is built from cheapest edges first"
+    }
+  ]
+}

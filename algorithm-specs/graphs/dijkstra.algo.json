@@ -1,0 +1,190 @@
+{
+  "id": "dijkstra",
+  "name": "Dijkstra's Algorithm",
+  "category": "graph",
+  "description": "A greedy algorithm that finds the shortest paths from a single source vertex to all other vertices in a weighted graph with non-negative edge weights. It maintains a priority queue of vertices ordered by their tentative distances, repeatedly extracting the vertex with the smallest distance and relaxing its edges.",
+  "complexity": {
+    "time": {
+      "worst": "O((V + E) log V)"
+    },
+    "space": "O(V)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure dijkstra(graph, source)" },
+    { "line": 1, "text": "  dist ← map of all vertices to ∞" },
+    { "line": 2, "text": "  prev ← map of all vertices to null" },
+    { "line": 3, "text": "  dist[source] ← 0" },
+    { "line": 4, "text": "  PQ ← priority queue with (0, source)" },
+    { "line": 5, "text": "  while PQ is not empty do" },
+    { "line": 6, "text": "    (d, u) ← PQ.extractMin()" },
+    { "line": 7, "text": "    if d > dist[u] then continue" },
+    { "line": 8, "text": "    for each neighbor (v, weight) of u do" },
+    { "line": 9, "text": "      alt ← dist[u] + weight" },
+    { "line": 10, "text": "      if alt < dist[v] then" },
+    { "line": 11, "text": "        dist[v] ← alt" },
+    { "line": 12, "text": "        prev[v] ← u" },
+    { "line": 13, "text": "        PQ.insert(alt, v)" },
+    { "line": 14, "text": "  return dist, prev" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing tentative distances during edge relaxation",
+      "highlights": {
+        "node": "neighbor",
+        "edge": ["current", "neighbor"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Extracting the vertex with minimum distance from the priority queue",
+      "highlights": {
+        "node": "current",
+        "color": "selected"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Updating the distance of a neighbor after successful relaxation",
+      "highlights": {
+        "node": "neighbor",
+        "edge": ["current", "neighbor"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Examining an edge from the current vertex to a neighbor",
+      "highlights": {
+        "node": "neighbor",
+        "edge": ["current", "neighbor"],
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Vertex's shortest distance has been finalized",
+      "highlights": {
+        "node": "current",
+        "color": "visited"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "adjacencyList": {
+        "type": "object",
+        "description": "Weighted graph as adjacency list mapping node IDs to arrays of {node, weight} objects",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "node": { "type": "string" },
+              "weight": { "type": "number" }
+            },
+            "required": ["node", "weight"]
+          }
+        }
+      },
+      "startNode": {
+        "type": "string",
+        "description": "The source vertex for shortest path computation"
+      }
+    },
+    "required": ["adjacencyList", "startNode"],
+    "default": {
+      "adjacencyList": {
+        "A": [{ "node": "B", "weight": 4 }, { "node": "C", "weight": 2 }],
+        "B": [{ "node": "A", "weight": 4 }, { "node": "D", "weight": 3 }, { "node": "C", "weight": 1 }],
+        "C": [{ "node": "A", "weight": 2 }, { "node": "B", "weight": 1 }, { "node": "D", "weight": 5 }],
+        "D": [{ "node": "B", "weight": 3 }, { "node": "C", "weight": 5 }]
+      },
+      "startNode": "A"
+    }
+  },
+  "stateSchema": {
+    "graph": {
+      "type": "object",
+      "description": "The weighted adjacency list representation of the graph"
+    },
+    "distances": {
+      "type": "object",
+      "description": "Map of vertex IDs to their current shortest distances from the source",
+      "additionalProperties": { "type": "number" }
+    },
+    "previous": {
+      "type": "object",
+      "description": "Map of vertex IDs to their predecessor on the shortest path",
+      "additionalProperties": { "type": "string" }
+    },
+    "priorityQueue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node": { "type": "string" },
+          "distance": { "type": "number" }
+        }
+      },
+      "description": "The priority queue of vertices to process"
+    },
+    "visited": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Set of vertices whose shortest distance has been finalized"
+    },
+    "currentNode": { "type": "string" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Simple weighted graph",
+      "input": {
+        "adjacencyList": {
+          "A": [{ "node": "B", "weight": 4 }, { "node": "C", "weight": 2 }],
+          "B": [{ "node": "A", "weight": 4 }, { "node": "D", "weight": 3 }, { "node": "C", "weight": 1 }],
+          "C": [{ "node": "A", "weight": 2 }, { "node": "B", "weight": 1 }, { "node": "D", "weight": 5 }],
+          "D": [{ "node": "B", "weight": 3 }, { "node": "C", "weight": 5 }]
+        },
+        "startNode": "A"
+      },
+      "expectedDistances": { "A": 0, "B": 3, "C": 2, "D": 6 },
+      "description": "Shortest paths prefer indirect routes through C rather than direct edge A→B"
+    },
+    {
+      "name": "Linear weighted path",
+      "input": {
+        "adjacencyList": {
+          "1": [{ "node": "2", "weight": 1 }],
+          "2": [{ "node": "1", "weight": 1 }, { "node": "3", "weight": 2 }],
+          "3": [{ "node": "2", "weight": 2 }, { "node": "4", "weight": 3 }],
+          "4": [{ "node": "3", "weight": 3 }]
+        },
+        "startNode": "1"
+      },
+      "expectedDistances": { "1": 0, "2": 1, "3": 3, "4": 6 },
+      "description": "Linear chain where distances accumulate along the only path"
+    },
+    {
+      "name": "Graph with multiple shortest path options",
+      "input": {
+        "adjacencyList": {
+          "S": [{ "node": "A", "weight": 7 }, { "node": "B", "weight": 2 }, { "node": "C", "weight": 3 }],
+          "A": [{ "node": "S", "weight": 7 }, { "node": "D", "weight": 4 }],
+          "B": [{ "node": "S", "weight": 2 }, { "node": "D", "weight": 4 }, { "node": "H", "weight": 1 }],
+          "C": [{ "node": "S", "weight": 3 }, { "node": "L", "weight": 2 }],
+          "D": [{ "node": "A", "weight": 4 }, { "node": "B", "weight": 4 }, { "node": "F", "weight": 5 }],
+          "H": [{ "node": "B", "weight": 1 }, { "node": "F", "weight": 3 }],
+          "F": [{ "node": "D", "weight": 5 }, { "node": "H", "weight": 3 }],
+          "L": [{ "node": "C", "weight": 2 }]
+        },
+        "startNode": "S"
+      },
+      "expectedDistances": { "S": 0, "A": 7, "B": 2, "C": 3, "D": 6, "H": 3, "F": 6, "L": 5 },
+      "description": "Larger graph where Dijkstra explores multiple alternate routes to find optimal paths"
+    }
+  ]
+}

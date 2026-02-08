@@ -1,0 +1,190 @@
+{
+  "id": "red-black-tree",
+  "name": "Red-Black Tree",
+  "category": "data-structures",
+  "description": "A self-balancing binary search tree where each node stores an extra bit representing its color (red or black). The tree enforces balancing rules: the root is black, red nodes cannot have red children, and every path from a node to its null descendants contains the same number of black nodes. Rebalancing is achieved through recoloring and rotations after insertions and deletions.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "search": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "delete": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure insert(root, value)" },
+    { "line": 1, "text": "  node ← new Node(value, color=RED)" },
+    { "line": 2, "text": "  BST-insert(root, node)" },
+    { "line": 3, "text": "  fixInsert(node)" },
+    { "line": 4, "text": "" },
+    { "line": 5, "text": "procedure fixInsert(node)" },
+    { "line": 6, "text": "  while node.parent is RED do" },
+    { "line": 7, "text": "    if node.parent = node.grandparent.left then" },
+    { "line": 8, "text": "      uncle ← node.grandparent.right" },
+    { "line": 9, "text": "      if uncle is RED then" },
+    { "line": 10, "text": "        node.parent.color ← BLACK" },
+    { "line": 11, "text": "        uncle.color ← BLACK" },
+    { "line": 12, "text": "        node.grandparent.color ← RED" },
+    { "line": 13, "text": "        node ← node.grandparent" },
+    { "line": 14, "text": "      else" },
+    { "line": 15, "text": "        if node = node.parent.right then" },
+    { "line": 16, "text": "          node ← node.parent" },
+    { "line": 17, "text": "          leftRotate(node)" },
+    { "line": 18, "text": "        node.parent.color ← BLACK" },
+    { "line": 19, "text": "        node.grandparent.color ← RED" },
+    { "line": 20, "text": "        rightRotate(node.grandparent)" },
+    { "line": 21, "text": "    else (symmetric for right side)" },
+    { "line": 22, "text": "  root.color ← BLACK" },
+    { "line": 23, "text": "" },
+    { "line": 24, "text": "procedure search(root, target)" },
+    { "line": 25, "text": "  if root = null then return NOT_FOUND" },
+    { "line": 26, "text": "  if target = root.value then return FOUND" },
+    { "line": 27, "text": "  if target < root.value then" },
+    { "line": 28, "text": "    return search(root.left, target)" },
+    { "line": 29, "text": "  else return search(root.right, target)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing a value with the current node",
+      "highlights": {
+        "node": "current",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a new red node into the tree",
+      "highlights": {
+        "node": "new",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "rotate",
+      "description": "Performing a rotation to rebalance the tree",
+      "highlights": {
+        "node": "pivot",
+        "rotationType": "left|right",
+        "color": "rotating"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a node to show recoloring (red/black color change)",
+      "highlights": {
+        "node": "current",
+        "nodeColor": "red|black",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to a child node during search or insertion",
+      "highlights": {
+        "node": "current",
+        "direction": "left|right",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Node confirmed in correct position after balancing and recoloring",
+      "highlights": {
+        "node": "current",
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "search"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert or search for"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 30 },
+      { "operation": "insert", "value": 15 },
+      { "operation": "insert", "value": 25 },
+      { "operation": "insert", "value": 5 },
+      { "operation": "search", "value": 15 }
+    ]
+  },
+  "stateSchema": {
+    "tree": {
+      "type": "object",
+      "description": "The red-black tree represented as a nested node structure",
+      "properties": {
+        "value": { "type": "number" },
+        "nodeColor": { "type": "string", "enum": ["red", "black"] },
+        "left": { "type": "object" },
+        "right": { "type": "object" }
+      }
+    },
+    "currentNode": { "type": "object", "description": "The node currently being examined" },
+    "targetValue": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "rotationType": { "type": "string", "enum": ["left", "right"] },
+    "traversalPath": { "type": "array", "items": { "type": "number" } },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Recoloring case (red uncle)",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "insert", "value": 15 },
+        { "operation": "insert", "value": 3 }
+      ],
+      "description": "Inserting a node where the uncle is red triggers a recoloring without rotation"
+    },
+    {
+      "name": "Rotation case (black uncle)",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 30 }
+      ],
+      "description": "Inserting increasing values triggers a left rotation with recoloring"
+    },
+    {
+      "name": "Search after multiple insertions",
+      "input": [
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "insert", "value": 15 },
+        { "operation": "insert", "value": 25 },
+        { "operation": "search", "value": 15 },
+        { "operation": "search", "value": 12 }
+      ],
+      "description": "Search for existing and non-existing values in a balanced red-black tree"
+    }
+  ]
+}

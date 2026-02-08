@@ -14,6 +14,14 @@ import { avlTree } from '@/algorithms/data-structures/avl-tree';
 import { hashTable } from '@/algorithms/data-structures/hash-table';
 import { bfs } from '@/algorithms/graph/bfs';
 import { dfs } from '@/algorithms/graph/dfs';
+import { redBlackTree } from '@/algorithms/data-structures/red-black-tree';
+import { splayTree } from '@/algorithms/data-structures/splay-tree';
+import { trie } from '@/algorithms/data-structures/trie';
+import { bTree } from '@/algorithms/data-structures/b-tree';
+import { minHeap } from '@/algorithms/data-structures/min-heap';
+import { dijkstra } from '@/algorithms/graph/dijkstra';
+import { prim } from '@/algorithms/graph/prim';
+import { kruskal } from '@/algorithms/graph/kruskal';
 
 interface VisualizationState {
   currentAlgorithm: AlgorithmImplementation | null;
@@ -30,7 +38,8 @@ export const useVisualizationStore = create<VisualizationState>((set) => ({
   availableAlgorithms: [
     bubbleSort, insertionSort, selectionSort, mergeSort, quickSort, heapSort,
     stack, queue, bst, linkedList, avlTree, hashTable,
-    bfs, dfs,
+    bfs, dfs, dijkstra, prim, kruskal,
+    redBlackTree, splayTree, trie, bTree, minHeap,
   ],
 
   selectAlgorithm: (algorithm) => set({ currentAlgorithm: algorithm }),

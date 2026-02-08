@@ -1,0 +1,172 @@
+{
+  "id": "splay-tree",
+  "name": "Splay Tree",
+  "category": "data-structures",
+  "description": "A self-adjusting binary search tree where recently accessed elements are moved to the root through a series of rotations called splaying. The splay operation uses three rotation patterns: zig (single rotation), zig-zig (two same-direction rotations), and zig-zag (two opposite-direction rotations). This provides amortized O(log n) performance and excellent cache locality for frequently accessed elements.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(n)",
+        "amortized": "O(log n)"
+      },
+      "search": {
+        "average": "O(log n)",
+        "worst": "O(n)",
+        "amortized": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure splay(root, value)" },
+    { "line": 1, "text": "  if root = null or root.value = value then return root" },
+    { "line": 2, "text": "  if value < root.value then" },
+    { "line": 3, "text": "    if root.left = null then return root" },
+    { "line": 4, "text": "    if value < root.left.value then     // Zig-Zig (Left Left)" },
+    { "line": 5, "text": "      root.left.left ← splay(root.left.left, value)" },
+    { "line": 6, "text": "      root ← rightRotate(root)" },
+    { "line": 7, "text": "    else if value > root.left.value then // Zig-Zag (Left Right)" },
+    { "line": 8, "text": "      root.left.right ← splay(root.left.right, value)" },
+    { "line": 9, "text": "      if root.left.right ≠ null then" },
+    { "line": 10, "text": "        root.left ← leftRotate(root.left)" },
+    { "line": 11, "text": "    return rightRotate(root)             // Zig" },
+    { "line": 12, "text": "  else" },
+    { "line": 13, "text": "    (symmetric for right subtree)" },
+    { "line": 14, "text": "" },
+    { "line": 15, "text": "procedure insert(root, value)" },
+    { "line": 16, "text": "  BST-insert(root, value)" },
+    { "line": 17, "text": "  root ← splay(root, value)" },
+    { "line": 18, "text": "" },
+    { "line": 19, "text": "procedure search(root, value)" },
+    { "line": 20, "text": "  root ← splay(root, value)" },
+    { "line": 21, "text": "  if root.value = value then return FOUND" },
+    { "line": 22, "text": "  else return NOT_FOUND" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing a value with the current node",
+      "highlights": {
+        "node": "current",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a new node into the tree",
+      "highlights": {
+        "node": "new",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "rotate",
+      "description": "Performing a rotation as part of the splay operation",
+      "highlights": {
+        "node": "pivot",
+        "rotationType": "zig|zig-zig|zig-zag",
+        "color": "rotating"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the node being splayed to the root",
+      "highlights": {
+        "node": "current",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to a child node during search or insertion",
+      "highlights": {
+        "node": "current",
+        "direction": "left|right",
+        "color": "traversing"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "search"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert or search for"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 40 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 60 },
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 30 },
+      { "operation": "search", "value": 10 },
+      { "operation": "search", "value": 30 }
+    ]
+  },
+  "stateSchema": {
+    "tree": {
+      "type": "object",
+      "description": "The splay tree represented as a nested node structure",
+      "properties": {
+        "value": { "type": "number" },
+        "left": { "type": "object" },
+        "right": { "type": "object" }
+      }
+    },
+    "currentNode": { "type": "object", "description": "The node currently being examined or splayed" },
+    "targetValue": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "splayType": { "type": "string", "enum": ["zig", "zig-zig", "zig-zag"] },
+    "traversalPath": { "type": "array", "items": { "type": "number" } },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Zig-zig rotation",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 }
+      ],
+      "description": "Inserting decreasing values triggers zig-zig rotations as each inserted node is splayed to root"
+    },
+    {
+      "name": "Zig-zag rotation",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 80 },
+        { "operation": "insert", "value": 30 }
+      ],
+      "description": "Inserting 30 after 20 triggers a zig-zag rotation pattern during the splay"
+    },
+    {
+      "name": "Search moves accessed node to root",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 70 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "search", "value": 20 }
+      ],
+      "expectedSearchResult": "found",
+      "description": "Searching for 20 splays it to the root of the tree"
+    }
+  ]
+}
