@@ -58,14 +58,7 @@ Save the output to `design-tokens/src/figma-overrides.json` and rebuild tokens.
 
 ## Option 2: Official Figma MCP (Zero-Code)
 
-Add the official Figma MCP server to Claude Code:
-
-```bash
-claude mcp add --transport http figma https://mcp.figma.com/mcp
-```
-
-Then ask Claude to fetch components:
-> "Fetch the color styles from my Figma file [URL]"
+Connect to the official Figma MCP server at `https://mcp.figma.com/mcp` using your preferred MCP client.
 
 ---
 
