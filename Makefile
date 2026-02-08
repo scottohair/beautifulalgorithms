@@ -1,4 +1,4 @@
-.PHONY: all tokens web-dev web-build bridge-dev test test-parity clean
+.PHONY: all tokens web-dev web-build bridge-dev test test-web test-parity validate-parity validate-tokens clean
 
 all: tokens web-build
 
@@ -29,14 +29,20 @@ bridge-dev:
 bridge-build:
 	cd bridge && npm run build
 
-# Testing
-test: test-web test-parity
+# Testing & Validation
+test: test-web validate-parity validate-tokens
 
 test-web:
 	cd web && npm test
 
 test-parity:
-	node scripts/validate-parity.js
+	npx tsx scripts/validate-parity.js
+
+validate-parity:
+	npx tsx scripts/validate-parity.js
+
+validate-tokens:
+	node scripts/validate-tokens.js
 
 # Setup
 setup: tokens web-install bridge-install
