@@ -22,6 +22,7 @@ app.use(express.json());
 app.use((_req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   next();
 });
 
@@ -33,3 +34,5 @@ app.listen(PORT, () => {
   console.log(`Figma: ${figmaClient ? 'configured' : 'not configured (set FIGMA_ACCESS_TOKEN)'}`);
   console.log(`Canva: ${canvaClient ? 'configured' : 'not configured (set CANVA_API_KEY)'}`);
 });
+
+export { app };
