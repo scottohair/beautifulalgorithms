@@ -6,6 +6,14 @@ import { selectionSort } from '@/algorithms/sorting/selection-sort';
 import { stack } from '@/algorithms/data-structures/stack';
 import { queue } from '@/algorithms/data-structures/queue';
 import { bst } from '@/algorithms/data-structures/bst';
+import { mergeSort } from '@/algorithms/sorting/merge-sort';
+import { quickSort } from '@/algorithms/sorting/quick-sort';
+import { heapSort } from '@/algorithms/sorting/heap-sort';
+import { linkedList } from '@/algorithms/data-structures/linked-list';
+import { avlTree } from '@/algorithms/data-structures/avl-tree';
+import { hashTable } from '@/algorithms/data-structures/hash-table';
+import { bfs } from '@/algorithms/graph/bfs';
+import { dfs } from '@/algorithms/graph/dfs';
 
 interface VisualizationState {
   currentAlgorithm: AlgorithmImplementation | null;
@@ -19,7 +27,11 @@ interface VisualizationState {
 export const useVisualizationStore = create<VisualizationState>((set) => ({
   currentAlgorithm: null,
   inputArray: [64, 34, 25, 12, 22, 11, 90, 45, 78, 33],
-  availableAlgorithms: [bubbleSort, insertionSort, selectionSort, stack, queue, bst],
+  availableAlgorithms: [
+    bubbleSort, insertionSort, selectionSort, mergeSort, quickSort, heapSort,
+    stack, queue, bst, linkedList, avlTree, hashTable,
+    bfs, dfs,
+  ],
 
   selectAlgorithm: (algorithm) => set({ currentAlgorithm: algorithm }),
 

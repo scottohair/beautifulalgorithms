@@ -1,0 +1,157 @@
+{
+  "id": "dfs",
+  "name": "Depth-First Search",
+  "category": "graph",
+  "description": "A graph traversal algorithm that explores as far as possible along each branch before backtracking. This iterative implementation uses an explicit stack to track vertices, visiting deeper nodes before siblings.",
+  "complexity": {
+    "time": {
+      "worst": "O(V + E)"
+    },
+    "space": "O(V)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure DFS(graph, start)" },
+    { "line": 1, "text": "  visited \u2190 empty set" },
+    { "line": 2, "text": "  stack \u2190 empty stack" },
+    { "line": 3, "text": "  stack.push(start)" },
+    { "line": 4, "text": "  while stack is not empty do" },
+    { "line": 5, "text": "    current \u2190 stack.pop()" },
+    { "line": 6, "text": "    if current not in visited then" },
+    { "line": 7, "text": "      visited.add(current)" },
+    { "line": 8, "text": "      process(current)" },
+    { "line": 9, "text": "      for each neighbor of current do" },
+    { "line": 10, "text": "        if neighbor not in visited then" },
+    { "line": 11, "text": "          stack.push(neighbor)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "traverse",
+      "description": "Popping and processing the current vertex from the stack",
+      "highlights": {
+        "node": "current",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Examining a neighbor of the current vertex",
+      "highlights": {
+        "node": "neighbor",
+        "edge": ["current", "neighbor"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Pushing an unvisited neighbor onto the stack",
+      "highlights": {
+        "node": "neighbor",
+        "color": "selected"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Vertex has been fully visited (all neighbors explored)",
+      "highlights": {
+        "node": "current",
+        "color": "visited"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "adjacencyList": {
+        "type": "object",
+        "description": "Graph represented as an adjacency list mapping node IDs to arrays of neighbor IDs",
+        "additionalProperties": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "startNode": {
+        "type": "string",
+        "description": "The node to start the traversal from"
+      }
+    },
+    "required": ["adjacencyList", "startNode"],
+    "default": {
+      "adjacencyList": {
+        "A": ["B", "C"],
+        "B": ["A", "D", "E"],
+        "C": ["A", "F"],
+        "D": ["B"],
+        "E": ["B", "F"],
+        "F": ["C", "E"]
+      },
+      "startNode": "A"
+    }
+  },
+  "stateSchema": {
+    "graph": {
+      "type": "object",
+      "description": "The adjacency list representation of the graph"
+    },
+    "visited": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Set of visited node IDs"
+    },
+    "stack": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The DFS stack of nodes to visit"
+    },
+    "currentNode": { "type": "string" },
+    "traversalOrder": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Order in which nodes were processed"
+    },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Simple connected graph",
+      "input": {
+        "adjacencyList": {
+          "A": ["B", "C"],
+          "B": ["A", "D", "E"],
+          "C": ["A", "F"],
+          "D": ["B"],
+          "E": ["B", "F"],
+          "F": ["C", "E"]
+        },
+        "startNode": "A"
+      },
+      "description": "DFS on a connected undirected graph starting from A explores depth-first"
+    },
+    {
+      "name": "Linear graph",
+      "input": {
+        "adjacencyList": {
+          "1": ["2"],
+          "2": ["1", "3"],
+          "3": ["2", "4"],
+          "4": ["3"]
+        },
+        "startNode": "1"
+      },
+      "expectedTraversalOrder": ["1", "2", "3", "4"],
+      "description": "DFS on a linear chain graph visits nodes sequentially"
+    },
+    {
+      "name": "Graph with cycle",
+      "input": {
+        "adjacencyList": {
+          "A": ["B", "C"],
+          "B": ["A", "C"],
+          "C": ["A", "B", "D"],
+          "D": ["C"]
+        },
+        "startNode": "A"
+      },
+      "description": "DFS correctly handles cycles by tracking visited nodes"
+    }
+  ]
+}

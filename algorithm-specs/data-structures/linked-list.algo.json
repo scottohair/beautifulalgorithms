@@ -1,0 +1,178 @@
+{
+  "id": "linked-list",
+  "name": "Linked List",
+  "category": "data-structures",
+  "description": "A linear data structure where each element (node) contains a value and a reference (pointer) to the next node. Supports efficient insertion and deletion at the head, with sequential access for search and arbitrary position operations.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "head": "O(1)",
+        "tail": "O(1)"
+      },
+      "search": {
+        "average": "O(n)",
+        "worst": "O(n)"
+      },
+      "delete": {
+        "average": "O(n)",
+        "worst": "O(n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "class Node" },
+    { "line": 1, "text": "  value, next \u2190 null" },
+    { "line": 2, "text": "" },
+    { "line": 3, "text": "procedure insertHead(head, value)" },
+    { "line": 4, "text": "  newNode \u2190 new Node(value)" },
+    { "line": 5, "text": "  newNode.next \u2190 head" },
+    { "line": 6, "text": "  head \u2190 newNode" },
+    { "line": 7, "text": "  return head" },
+    { "line": 8, "text": "" },
+    { "line": 9, "text": "procedure insertTail(head, value)" },
+    { "line": 10, "text": "  newNode \u2190 new Node(value)" },
+    { "line": 11, "text": "  if head = null then return newNode" },
+    { "line": 12, "text": "  current \u2190 head" },
+    { "line": 13, "text": "  while current.next \u2260 null do" },
+    { "line": 14, "text": "    current \u2190 current.next" },
+    { "line": 15, "text": "  current.next \u2190 newNode" },
+    { "line": 16, "text": "  return head" },
+    { "line": 17, "text": "" },
+    { "line": 18, "text": "procedure deleteNode(head, value)" },
+    { "line": 19, "text": "  if head.value = value then return head.next" },
+    { "line": 20, "text": "  current \u2190 head" },
+    { "line": 21, "text": "  while current.next \u2260 null do" },
+    { "line": 22, "text": "    if current.next.value = value then" },
+    { "line": 23, "text": "      current.next \u2190 current.next.next" },
+    { "line": 24, "text": "      return head" },
+    { "line": 25, "text": "    current \u2190 current.next" },
+    { "line": 26, "text": "  return head" },
+    { "line": 27, "text": "" },
+    { "line": 28, "text": "procedure search(head, target)" },
+    { "line": 29, "text": "  current \u2190 head" },
+    { "line": 30, "text": "  while current \u2260 null do" },
+    { "line": 31, "text": "    if current.value = target then return FOUND" },
+    { "line": 32, "text": "    current \u2190 current.next" },
+    { "line": 33, "text": "  return NOT_FOUND" }
+  ],
+  "stepTypes": [
+    {
+      "type": "insert",
+      "description": "Inserting a new node into the list",
+      "highlights": {
+        "node": "new",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing a node from the list",
+      "highlights": {
+        "node": "target",
+        "color": "removing"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to the next node in the list",
+      "highlights": {
+        "node": "current",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a node during search or operation",
+      "highlights": {
+        "node": "current",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting a node as the target of an operation",
+      "highlights": {
+        "node": "target",
+        "color": "selected"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insertHead", "insertTail", "deleteNode", "search"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert, delete, or search for"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insertHead", "value": 10 },
+      { "operation": "insertTail", "value": 20 },
+      { "operation": "insertTail", "value": 30 },
+      { "operation": "insertHead", "value": 5 },
+      { "operation": "search", "value": 20 },
+      { "operation": "deleteNode", "value": 20 }
+    ]
+  },
+  "stateSchema": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "number" },
+          "next": { "type": "number" }
+        }
+      },
+      "description": "The linked list represented as an array of node objects"
+    },
+    "head": { "type": "number", "description": "Index of the head node" },
+    "currentNode": { "type": "number", "description": "Index of the node currently being examined" },
+    "targetValue": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Insert and search",
+      "input": [
+        { "operation": "insertHead", "value": 10 },
+        { "operation": "insertTail", "value": 20 },
+        { "operation": "insertTail", "value": 30 },
+        { "operation": "search", "value": 20 }
+      ],
+      "description": "Build a list and search for an existing element"
+    },
+    {
+      "name": "Insert and delete",
+      "input": [
+        { "operation": "insertHead", "value": 10 },
+        { "operation": "insertTail", "value": 20 },
+        { "operation": "insertTail", "value": 30 },
+        { "operation": "deleteNode", "value": 20 }
+      ],
+      "description": "Build a list and delete a middle node"
+    },
+    {
+      "name": "Search miss",
+      "input": [
+        { "operation": "insertHead", "value": 10 },
+        { "operation": "insertTail", "value": 20 },
+        { "operation": "insertTail", "value": 30 },
+        { "operation": "search", "value": 99 }
+      ],
+      "description": "Search for a value that does not exist in the list"
+    }
+  ]
+}

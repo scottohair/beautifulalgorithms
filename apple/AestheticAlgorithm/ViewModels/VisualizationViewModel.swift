@@ -10,9 +10,17 @@ class VisualizationViewModel {
         BubbleSort(),
         InsertionSort(),
         SelectionSort(),
+        MergeSort(),
+        QuickSort(),
+        HeapSort(),
         StackAlgorithm(),
         QueueAlgorithm(),
-        BSTAlgorithm()
+        BSTAlgorithm(),
+        LinkedListAlgorithm(),
+        AVLTreeAlgorithm(),
+        HashTableAlgorithm(),
+        BFSAlgorithm(),
+        DFSAlgorithm()
     ]
 
     func selectAlgorithm(_ algorithm: any AlgorithmExecutable) {

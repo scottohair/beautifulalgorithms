@@ -11,6 +11,10 @@ struct AlgorithmListView: View {
         viewModel.availableAlgorithms.filter { $0.category == "data-structures" }
     }
 
+    private var graphAlgorithms: [any AlgorithmExecutable] {
+        viewModel.availableAlgorithms.filter { $0.category == "graph" }
+    }
+
     var body: some View {
         List {
             Section {
@@ -27,6 +31,14 @@ struct AlgorithmListView: View {
                 }
             } header: {
                 sectionHeader("DATA STRUCTURES")
+            }
+
+            Section {
+                ForEach(graphAlgorithms, id: \.id) { algorithm in
+                    algorithmRow(algorithm)
+                }
+            } header: {
+                sectionHeader("GRAPH")
             }
         }
         .listStyle(.sidebar)

@@ -1,0 +1,119 @@
+{
+  "id": "heap-sort",
+  "name": "Heap Sort",
+  "category": "sorting",
+  "description": "A comparison-based sorting algorithm that uses a binary max-heap data structure. It first builds a max-heap from the input, then repeatedly extracts the maximum element and places it at the end of the sorted portion.",
+  "complexity": {
+    "time": {
+      "best": "O(n log n)",
+      "average": "O(n log n)",
+      "worst": "O(n log n)"
+    },
+    "space": "O(1)"
+  },
+  "stable": false,
+  "inPlace": true,
+  "pseudocode": [
+    { "line": 0, "text": "procedure heapSort(A: list)" },
+    { "line": 1, "text": "  n \u2190 length(A)" },
+    { "line": 2, "text": "  buildMaxHeap(A, n)" },
+    { "line": 3, "text": "  for i \u2190 n-1 down to 1 do" },
+    { "line": 4, "text": "    swap(A[0], A[i])" },
+    { "line": 5, "text": "    heapify(A, 0, i)" },
+    { "line": 6, "text": "" },
+    { "line": 7, "text": "procedure buildMaxHeap(A, n)" },
+    { "line": 8, "text": "  for i \u2190 n/2 - 1 down to 0 do" },
+    { "line": 9, "text": "    heapify(A, i, n)" },
+    { "line": 10, "text": "" },
+    { "line": 11, "text": "procedure heapify(A, i, heapSize)" },
+    { "line": 12, "text": "  largest \u2190 i" },
+    { "line": 13, "text": "  left \u2190 2*i + 1" },
+    { "line": 14, "text": "  right \u2190 2*i + 2" },
+    { "line": 15, "text": "  if left < heapSize and A[left] > A[largest] then" },
+    { "line": 16, "text": "    largest \u2190 left" },
+    { "line": 17, "text": "  if right < heapSize and A[right] > A[largest] then" },
+    { "line": 18, "text": "    largest \u2190 right" },
+    { "line": 19, "text": "  if largest \u2260 i then" },
+    { "line": 20, "text": "    swap(A[i], A[largest])" },
+    { "line": 21, "text": "    heapify(A, largest, heapSize)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing a node with its children to find the largest",
+      "highlights": {
+        "indices": ["i", "child"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Swapping a node with its largest child or extracting max",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "heapify",
+      "description": "Restoring the max-heap property at the given node",
+      "highlights": {
+        "indices": ["i"],
+        "color": "heapifying"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element placed in its final sorted position",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": { "type": "number" },
+    "minLength": 2,
+    "maxLength": 50,
+    "default": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33]
+  },
+  "stateSchema": {
+    "array": { "type": "array", "items": { "type": "number" } },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "heapifyIndex": { "type": "number" },
+    "heapSize": { "type": "number" },
+    "sortedIndices": { "type": "array", "items": { "type": "number" } },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Empty array",
+      "input": [],
+      "expected": [],
+      "expectedStepCount": 0
+    },
+    {
+      "name": "Single element",
+      "input": [42],
+      "expected": [42],
+      "expectedStepCount": 0
+    },
+    {
+      "name": "Already sorted",
+      "input": [1, 2, 3, 4, 5],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Reverse sorted",
+      "input": [5, 4, 3, 2, 1],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Default input",
+      "input": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33],
+      "expected": [11, 12, 22, 25, 33, 34, 45, 64, 78, 90]
+    }
+  ]
+}

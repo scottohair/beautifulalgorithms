@@ -1,0 +1,160 @@
+{
+  "id": "bfs",
+  "name": "Breadth-First Search",
+  "category": "graph",
+  "description": "A graph traversal algorithm that explores all vertices at the current depth level before moving to vertices at the next depth level. Uses a queue to keep track of vertices to visit, guaranteeing the shortest path in unweighted graphs.",
+  "complexity": {
+    "time": {
+      "worst": "O(V + E)"
+    },
+    "space": "O(V)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure BFS(graph, start)" },
+    { "line": 1, "text": "  visited \u2190 empty set" },
+    { "line": 2, "text": "  queue \u2190 empty queue" },
+    { "line": 3, "text": "  visited.add(start)" },
+    { "line": 4, "text": "  queue.enqueue(start)" },
+    { "line": 5, "text": "  while queue is not empty do" },
+    { "line": 6, "text": "    current \u2190 queue.dequeue()" },
+    { "line": 7, "text": "    process(current)" },
+    { "line": 8, "text": "    for each neighbor of current do" },
+    { "line": 9, "text": "      if neighbor not in visited then" },
+    { "line": 10, "text": "        visited.add(neighbor)" },
+    { "line": 11, "text": "        queue.enqueue(neighbor)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "traverse",
+      "description": "Dequeuing and processing the current vertex",
+      "highlights": {
+        "node": "current",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Examining a neighbor of the current vertex",
+      "highlights": {
+        "node": "neighbor",
+        "edge": ["current", "neighbor"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Adding an unvisited neighbor to the queue",
+      "highlights": {
+        "node": "neighbor",
+        "color": "selected"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Vertex has been fully visited (all neighbors explored)",
+      "highlights": {
+        "node": "current",
+        "color": "visited"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "adjacencyList": {
+        "type": "object",
+        "description": "Graph represented as an adjacency list mapping node IDs to arrays of neighbor IDs",
+        "additionalProperties": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "startNode": {
+        "type": "string",
+        "description": "The node to start the traversal from"
+      }
+    },
+    "required": ["adjacencyList", "startNode"],
+    "default": {
+      "adjacencyList": {
+        "A": ["B", "C"],
+        "B": ["A", "D", "E"],
+        "C": ["A", "F"],
+        "D": ["B"],
+        "E": ["B", "F"],
+        "F": ["C", "E"]
+      },
+      "startNode": "A"
+    }
+  },
+  "stateSchema": {
+    "graph": {
+      "type": "object",
+      "description": "The adjacency list representation of the graph"
+    },
+    "visited": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Set of visited node IDs"
+    },
+    "queue": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The BFS queue of nodes to visit"
+    },
+    "currentNode": { "type": "string" },
+    "traversalOrder": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Order in which nodes were processed"
+    },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Simple connected graph",
+      "input": {
+        "adjacencyList": {
+          "A": ["B", "C"],
+          "B": ["A", "D", "E"],
+          "C": ["A", "F"],
+          "D": ["B"],
+          "E": ["B", "F"],
+          "F": ["C", "E"]
+        },
+        "startNode": "A"
+      },
+      "expectedTraversalOrder": ["A", "B", "C", "D", "E", "F"],
+      "description": "BFS on a connected undirected graph starting from A"
+    },
+    {
+      "name": "Linear graph",
+      "input": {
+        "adjacencyList": {
+          "1": ["2"],
+          "2": ["1", "3"],
+          "3": ["2", "4"],
+          "4": ["3"]
+        },
+        "startNode": "1"
+      },
+      "expectedTraversalOrder": ["1", "2", "3", "4"],
+      "description": "BFS on a linear chain graph"
+    },
+    {
+      "name": "Star graph",
+      "input": {
+        "adjacencyList": {
+          "center": ["a", "b", "c", "d"],
+          "a": ["center"],
+          "b": ["center"],
+          "c": ["center"],
+          "d": ["center"]
+        },
+        "startNode": "center"
+      },
+      "expectedTraversalOrder": ["center", "a", "b", "c", "d"],
+      "description": "BFS on a star graph visits all leaves in one level"
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "id": "avl-tree",
+  "name": "AVL Tree",
+  "category": "data-structures",
+  "description": "A self-balancing binary search tree where the heights of the two child subtrees of every node differ by at most one. Rebalancing is performed through rotations (left, right, left-right, right-left) after insertions and deletions.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "search": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "delete": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure insert(root, value)" },
+    { "line": 1, "text": "  if root = null then return new Node(value)" },
+    { "line": 2, "text": "  if value < root.value then" },
+    { "line": 3, "text": "    root.left \u2190 insert(root.left, value)" },
+    { "line": 4, "text": "  else if value > root.value then" },
+    { "line": 5, "text": "    root.right \u2190 insert(root.right, value)" },
+    { "line": 6, "text": "  else return root" },
+    { "line": 7, "text": "  root.height \u2190 1 + max(height(root.left), height(root.right))" },
+    { "line": 8, "text": "  balance \u2190 getBalance(root)" },
+    { "line": 9, "text": "  if balance > 1 and value < root.left.value then" },
+    { "line": 10, "text": "    return rightRotate(root)" },
+    { "line": 11, "text": "  if balance < -1 and value > root.right.value then" },
+    { "line": 12, "text": "    return leftRotate(root)" },
+    { "line": 13, "text": "  if balance > 1 and value > root.left.value then" },
+    { "line": 14, "text": "    root.left \u2190 leftRotate(root.left)" },
+    { "line": 15, "text": "    return rightRotate(root)" },
+    { "line": 16, "text": "  if balance < -1 and value < root.right.value then" },
+    { "line": 17, "text": "    root.right \u2190 rightRotate(root.right)" },
+    { "line": 18, "text": "    return leftRotate(root)" },
+    { "line": 19, "text": "  return root" },
+    { "line": 20, "text": "" },
+    { "line": 21, "text": "procedure search(root, target)" },
+    { "line": 22, "text": "  if root = null then return NOT_FOUND" },
+    { "line": 23, "text": "  if target = root.value then return FOUND" },
+    { "line": 24, "text": "  if target < root.value then" },
+    { "line": 25, "text": "    return search(root.left, target)" },
+    { "line": 26, "text": "  else return search(root.right, target)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing a value with the current node",
+      "highlights": {
+        "node": "current",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a new node into the tree",
+      "highlights": {
+        "node": "new",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "rotate",
+      "description": "Performing a rotation to rebalance the tree",
+      "highlights": {
+        "node": "pivot",
+        "rotationType": "left|right|left-right|right-left",
+        "color": "rotating"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a node to show balance factor or height update",
+      "highlights": {
+        "node": "current",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to a child node during search or insertion",
+      "highlights": {
+        "node": "current",
+        "direction": "left|right",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Node confirmed in correct position after balancing",
+      "highlights": {
+        "node": "current",
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "search"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert or search for"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 30 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 25 },
+      { "operation": "insert", "value": 40 },
+      { "operation": "insert", "value": 50 },
+      { "operation": "search", "value": 25 }
+    ]
+  },
+  "stateSchema": {
+    "tree": {
+      "type": "object",
+      "description": "The AVL tree represented as a nested node structure",
+      "properties": {
+        "value": { "type": "number" },
+        "height": { "type": "number" },
+        "balanceFactor": { "type": "number" },
+        "left": { "type": "object" },
+        "right": { "type": "object" }
+      }
+    },
+    "currentNode": { "type": "object", "description": "The node currently being examined" },
+    "targetValue": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "rotationType": { "type": "string", "enum": ["left", "right", "left-right", "right-left"] },
+    "traversalPath": { "type": "array", "items": { "type": "number" } },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Left-left case (right rotation)",
+      "input": [
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 }
+      ],
+      "description": "Inserting decreasing values triggers a right rotation at the root"
+    },
+    {
+      "name": "Mixed rotations",
+      "input": [
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 25 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 35 }
+      ],
+      "description": "Inserting values that trigger multiple different rotation types"
+    },
+    {
+      "name": "Search after balancing",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 70 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "search", "value": 20 }
+      ],
+      "expectedSearchResult": "found",
+      "description": "Search for a value after the tree has been rebalanced"
+    }
+  ]
+}

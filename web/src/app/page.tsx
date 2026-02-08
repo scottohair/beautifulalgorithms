@@ -8,6 +8,9 @@ const algorithms = [
       { id: 'bubble-sort', name: 'Bubble Sort', complexity: 'O(n²)' },
       { id: 'insertion-sort', name: 'Insertion Sort', complexity: 'O(n²)' },
       { id: 'selection-sort', name: 'Selection Sort', complexity: 'O(n²)' },
+      { id: 'merge-sort', name: 'Merge Sort', complexity: 'O(n log n)' },
+      { id: 'quick-sort', name: 'Quick Sort', complexity: 'O(n log n)' },
+      { id: 'heap-sort', name: 'Heap Sort', complexity: 'O(n log n)' },
     ],
   },
   {
@@ -17,6 +20,17 @@ const algorithms = [
       { id: 'stack', name: 'Stack', complexity: 'O(1)' },
       { id: 'queue', name: 'Queue', complexity: 'O(1)' },
       { id: 'bst', name: 'Binary Search Tree', complexity: 'O(log n)' },
+      { id: 'linked-list', name: 'Linked List', complexity: 'O(n)' },
+      { id: 'avl-tree', name: 'AVL Tree', complexity: 'O(log n)' },
+      { id: 'hash-table', name: 'Hash Table', complexity: 'O(1)' },
+    ],
+  },
+  {
+    category: 'graph',
+    name: 'Graph',
+    items: [
+      { id: 'bfs', name: 'Breadth-First Search', complexity: 'O(V+E)' },
+      { id: 'dfs', name: 'Depth-First Search', complexity: 'O(V+E)' },
     ],
   },
 ];

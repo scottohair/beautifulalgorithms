@@ -1,0 +1,196 @@
+{
+  "id": "hash-table",
+  "name": "Hash Table",
+  "category": "data-structures",
+  "description": "A data structure that maps keys to values using a hash function. It computes an index into an array of buckets, from which the desired value can be found. Collisions are handled using chaining, where each bucket stores a linked list of entries.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(1)",
+        "worst": "O(n)"
+      },
+      "search": {
+        "average": "O(1)",
+        "worst": "O(n)"
+      },
+      "delete": {
+        "average": "O(1)",
+        "worst": "O(n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure hash(key, tableSize)" },
+    { "line": 1, "text": "  return key mod tableSize" },
+    { "line": 2, "text": "" },
+    { "line": 3, "text": "procedure insert(table, key, value)" },
+    { "line": 4, "text": "  index \u2190 hash(key, table.size)" },
+    { "line": 5, "text": "  append (key, value) to table[index]" },
+    { "line": 6, "text": "" },
+    { "line": 7, "text": "procedure search(table, key)" },
+    { "line": 8, "text": "  index \u2190 hash(key, table.size)" },
+    { "line": 9, "text": "  for each entry in table[index] do" },
+    { "line": 10, "text": "    if entry.key = key then" },
+    { "line": 11, "text": "      return entry.value" },
+    { "line": 12, "text": "  return NOT_FOUND" },
+    { "line": 13, "text": "" },
+    { "line": 14, "text": "procedure delete(table, key)" },
+    { "line": 15, "text": "  index \u2190 hash(key, table.size)" },
+    { "line": 16, "text": "  for each entry in table[index] do" },
+    { "line": 17, "text": "    if entry.key = key then" },
+    { "line": 18, "text": "      remove entry from table[index]" },
+    { "line": 19, "text": "      return true" },
+    { "line": 20, "text": "  return false" }
+  ],
+  "stepTypes": [
+    {
+      "type": "hash",
+      "description": "Computing the hash index for a key",
+      "highlights": {
+        "key": "current",
+        "bucket": "target",
+        "color": "hashing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a key-value pair into the bucket",
+      "highlights": {
+        "bucket": "target",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "compare",
+      "description": "Comparing keys within a bucket chain during search or delete",
+      "highlights": {
+        "entry": "current",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a bucket or entry during an operation",
+      "highlights": {
+        "bucket": "target",
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing an entry from the bucket chain",
+      "highlights": {
+        "entry": "target",
+        "color": "removing"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "tableSize": {
+        "type": "number",
+        "description": "The number of buckets in the hash table",
+        "default": 7
+      },
+      "operations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": ["insert", "search", "delete"]
+            },
+            "key": {
+              "type": "number",
+              "description": "The key to hash"
+            },
+            "value": {
+              "type": "string",
+              "description": "The value to store (for insert operations)"
+            }
+          },
+          "required": ["operation", "key"]
+        }
+      }
+    },
+    "default": {
+      "tableSize": 7,
+      "operations": [
+        { "operation": "insert", "key": 10, "value": "A" },
+        { "operation": "insert", "key": 20, "value": "B" },
+        { "operation": "insert", "key": 3, "value": "C" },
+        { "operation": "insert", "key": 17, "value": "D" },
+        { "operation": "search", "key": 17 },
+        { "operation": "delete", "key": 10 }
+      ]
+    }
+  },
+  "stateSchema": {
+    "buckets": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "key": { "type": "number" },
+            "value": { "type": "string" }
+          }
+        }
+      },
+      "description": "The hash table represented as an array of bucket chains"
+    },
+    "tableSize": { "type": "number" },
+    "currentBucket": { "type": "number" },
+    "currentKey": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "hashIndex": { "type": "number" },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Basic insert and search",
+      "input": {
+        "tableSize": 7,
+        "operations": [
+          { "operation": "insert", "key": 10, "value": "A" },
+          { "operation": "insert", "key": 20, "value": "B" },
+          { "operation": "insert", "key": 3, "value": "C" },
+          { "operation": "search", "key": 10 }
+        ]
+      },
+      "description": "Insert several values and search for one that exists"
+    },
+    {
+      "name": "Collision handling",
+      "input": {
+        "tableSize": 7,
+        "operations": [
+          { "operation": "insert", "key": 3, "value": "A" },
+          { "operation": "insert", "key": 10, "value": "B" },
+          { "operation": "insert", "key": 17, "value": "C" },
+          { "operation": "search", "key": 17 }
+        ]
+      },
+      "description": "Keys 3, 10, and 17 all hash to the same bucket (mod 7 = 3), testing chaining"
+    },
+    {
+      "name": "Delete from chain",
+      "input": {
+        "tableSize": 7,
+        "operations": [
+          { "operation": "insert", "key": 3, "value": "A" },
+          { "operation": "insert", "key": 10, "value": "B" },
+          { "operation": "insert", "key": 17, "value": "C" },
+          { "operation": "delete", "key": 10 },
+          { "operation": "search", "key": 10 }
+        ]
+      },
+      "description": "Delete an entry from a chain with collisions, then verify it is gone"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "id": "merge-sort",
+  "name": "Merge Sort",
+  "category": "sorting",
+  "description": "An efficient, stable, divide-and-conquer sorting algorithm that divides the array into halves, recursively sorts each half, and then merges the sorted halves back together.",
+  "complexity": {
+    "time": {
+      "best": "O(n log n)",
+      "average": "O(n log n)",
+      "worst": "O(n log n)"
+    },
+    "space": "O(n)"
+  },
+  "stable": true,
+  "inPlace": false,
+  "pseudocode": [
+    { "line": 0, "text": "procedure mergeSort(A: list, left, right)" },
+    { "line": 1, "text": "  if left < right then" },
+    { "line": 2, "text": "    mid ← (left + right) / 2" },
+    { "line": 3, "text": "    mergeSort(A, left, mid)" },
+    { "line": 4, "text": "    mergeSort(A, mid+1, right)" },
+    { "line": 5, "text": "    merge(A, left, mid, right)" },
+    { "line": 6, "text": "" },
+    { "line": 7, "text": "procedure merge(A, left, mid, right)" },
+    { "line": 8, "text": "  L ← A[left..mid]" },
+    { "line": 9, "text": "  R ← A[mid+1..right]" },
+    { "line": 10, "text": "  i ← 0, j ← 0, k ← left" },
+    { "line": 11, "text": "  while i < length(L) and j < length(R) do" },
+    { "line": 12, "text": "    if L[i] ≤ R[j] then" },
+    { "line": 13, "text": "      A[k] ← L[i]; i ← i + 1" },
+    { "line": 14, "text": "    else" },
+    { "line": 15, "text": "      A[k] ← R[j]; j ← j + 1" },
+    { "line": 16, "text": "    k ← k + 1" },
+    { "line": 17, "text": "  copy remaining elements of L and R into A" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing two elements during the merge step",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "merge",
+      "description": "Placing an element into its correct position during merge",
+      "highlights": {
+        "indices": ["k"],
+        "color": "merging"
+      }
+    },
+    {
+      "type": "split",
+      "description": "Dividing the array into two halves",
+      "highlights": {
+        "range": ["left", "mid", "right"],
+        "color": "splitting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Sub-array is fully sorted after merge",
+      "highlights": {
+        "range": ["left", "right"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": { "type": "number" },
+    "minLength": 2,
+    "maxLength": 50,
+    "default": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33]
+  },
+  "stateSchema": {
+    "array": { "type": "array", "items": { "type": "number" } },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "mergeIndices": { "type": "array", "items": { "type": "number" } },
+    "splitRange": { "type": "array", "items": { "type": "number" }, "maxItems": 3 },
+    "sortedIndices": { "type": "array", "items": { "type": "number" } },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Empty array",
+      "input": [],
+      "expected": [],
+      "expectedStepCount": 0
+    },
+    {
+      "name": "Single element",
+      "input": [42],
+      "expected": [42],
+      "expectedStepCount": 0
+    },
+    {
+      "name": "Already sorted",
+      "input": [1, 2, 3, 4, 5],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Reverse sorted",
+      "input": [5, 4, 3, 2, 1],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Default input",
+      "input": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33],
+      "expected": [11, 12, 22, 25, 33, 34, 45, 64, 78, 90]
+    }
+  ]
+}
