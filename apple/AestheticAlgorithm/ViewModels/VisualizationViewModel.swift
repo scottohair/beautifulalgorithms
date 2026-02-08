@@ -7,7 +7,12 @@ class VisualizationViewModel {
     var inputArray: [Int] = [64, 34, 25, 12, 22, 11, 90, 45, 78, 33]
 
     var availableAlgorithms: [any AlgorithmExecutable] = [
-        BubbleSort()
+        BubbleSort(),
+        InsertionSort(),
+        SelectionSort(),
+        StackAlgorithm(),
+        QueueAlgorithm(),
+        BSTAlgorithm()
     ]
 
     func selectAlgorithm(_ algorithm: any AlgorithmExecutable) {

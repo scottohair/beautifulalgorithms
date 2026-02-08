@@ -1,0 +1,163 @@
+{
+  "id": "stack",
+  "name": "Stack (Array)",
+  "category": "data-structures",
+  "description": "A Last-In-First-Out (LIFO) data structure implemented with an array. Elements are added and removed from the top of the stack. Supports push, pop, and peek operations.",
+  "complexity": {
+    "time": {
+      "push": "O(1)",
+      "pop": "O(1)",
+      "peek": "O(1)"
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "class Stack" },
+    { "line": 1, "text": "  items ← []" },
+    { "line": 2, "text": "  top ← -1" },
+    { "line": 3, "text": "" },
+    { "line": 4, "text": "  procedure push(value)" },
+    { "line": 5, "text": "    top ← top + 1" },
+    { "line": 6, "text": "    items[top] ← value" },
+    { "line": 7, "text": "" },
+    { "line": 8, "text": "  procedure pop()" },
+    { "line": 9, "text": "    if top < 0 then" },
+    { "line": 10, "text": "      error \"Stack underflow\"" },
+    { "line": 11, "text": "    value ← items[top]" },
+    { "line": 12, "text": "    top ← top - 1" },
+    { "line": 13, "text": "    return value" },
+    { "line": 14, "text": "" },
+    { "line": 15, "text": "  procedure peek()" },
+    { "line": 16, "text": "    if top < 0 then" },
+    { "line": 17, "text": "      error \"Stack is empty\"" },
+    { "line": 18, "text": "    return items[top]" }
+  ],
+  "stepTypes": [
+    {
+      "type": "push",
+      "description": "Pushing a value onto the top of the stack",
+      "highlights": {
+        "indices": ["top"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "pop",
+      "description": "Removing the top element from the stack",
+      "highlights": {
+        "indices": ["top"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "peek",
+      "description": "Reading the top element without removing it",
+      "highlights": {
+        "indices": ["top"],
+        "color": "reading"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a specific element in the stack",
+      "highlights": {
+        "indices": ["index"],
+        "color": "highlight"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["push", "pop", "peek"]
+        },
+        "value": {
+          "type": "number",
+          "description": "Required for push, ignored for pop and peek"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "push", "value": 10 },
+      { "operation": "push", "value": 20 },
+      { "operation": "push", "value": 30 },
+      { "operation": "peek" },
+      { "operation": "pop" },
+      { "operation": "push", "value": 40 },
+      { "operation": "pop" },
+      { "operation": "pop" }
+    ]
+  },
+  "stateSchema": {
+    "stack": { "type": "array", "items": { "type": "number" } },
+    "top": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "operationValue": { "type": "number" },
+    "returnValue": { "type": "number" },
+    "error": { "type": "string" },
+    "highlightIndex": { "type": "number" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Push sequence",
+      "input": [
+        { "operation": "push", "value": 10 },
+        { "operation": "push", "value": 20 },
+        { "operation": "push", "value": 30 }
+      ],
+      "expectedState": {
+        "stack": [10, 20, 30],
+        "top": 2
+      }
+    },
+    {
+      "name": "Push and pop",
+      "input": [
+        { "operation": "push", "value": 10 },
+        { "operation": "push", "value": 20 },
+        { "operation": "push", "value": 30 },
+        { "operation": "pop" },
+        { "operation": "pop" }
+      ],
+      "expectedState": {
+        "stack": [10],
+        "top": 0
+      },
+      "expectedReturns": [null, null, null, 30, 20]
+    },
+    {
+      "name": "Push and peek",
+      "input": [
+        { "operation": "push", "value": 42 },
+        { "operation": "push", "value": 99 },
+        { "operation": "peek" }
+      ],
+      "expectedState": {
+        "stack": [42, 99],
+        "top": 1
+      },
+      "expectedReturns": [null, null, 99]
+    },
+    {
+      "name": "Underflow error",
+      "input": [
+        { "operation": "push", "value": 10 },
+        { "operation": "pop" },
+        { "operation": "pop" }
+      ],
+      "expectedState": {
+        "stack": [],
+        "top": -1,
+        "error": "Stack underflow"
+      }
+    }
+  ]
+}

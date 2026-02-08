@@ -1,0 +1,188 @@
+{
+  "id": "bst",
+  "name": "Binary Search Tree",
+  "category": "data-structures",
+  "description": "A node-based binary tree data structure where each node has at most two children. For every node, all values in the left subtree are less than the node's value, and all values in the right subtree are greater. Supports insert and search operations.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      },
+      "search": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      },
+      "delete": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "class Node" },
+    { "line": 1, "text": "  value, left ← null, right ← null" },
+    { "line": 2, "text": "" },
+    { "line": 3, "text": "procedure insert(root, value)" },
+    { "line": 4, "text": "  if root = null then" },
+    { "line": 5, "text": "    return new Node(value)" },
+    { "line": 6, "text": "  if value < root.value then" },
+    { "line": 7, "text": "    root.left ← insert(root.left, value)" },
+    { "line": 8, "text": "  else if value > root.value then" },
+    { "line": 9, "text": "    root.right ← insert(root.right, value)" },
+    { "line": 10, "text": "  return root" },
+    { "line": 11, "text": "" },
+    { "line": 12, "text": "procedure search(root, target)" },
+    { "line": 13, "text": "  if root = null then" },
+    { "line": 14, "text": "    return NOT_FOUND" },
+    { "line": 15, "text": "  if target = root.value then" },
+    { "line": 16, "text": "    return FOUND" },
+    { "line": 17, "text": "  if target < root.value then" },
+    { "line": 18, "text": "    return search(root.left, target)" },
+    { "line": 19, "text": "  else" },
+    { "line": 20, "text": "    return search(root.right, target)" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing target value with the current node",
+      "highlights": {
+        "node": "current",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Moving to a child node (left or right)",
+      "highlights": {
+        "node": "current",
+        "direction": "left|right",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a new node at the current position",
+      "highlights": {
+        "node": "new",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "found",
+      "description": "Target value found in the tree",
+      "highlights": {
+        "node": "current",
+        "color": "found"
+      }
+    },
+    {
+      "type": "not-found",
+      "description": "Target value not found (reached null node)",
+      "highlights": {
+        "node": "current",
+        "color": "not-found"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "search"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert or search for"
+        }
+      },
+      "required": ["operation", "value"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 50 },
+      { "operation": "insert", "value": 30 },
+      { "operation": "insert", "value": 70 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 40 },
+      { "operation": "insert", "value": 60 },
+      { "operation": "insert", "value": 80 },
+      { "operation": "search", "value": 40 },
+      { "operation": "search", "value": 55 }
+    ]
+  },
+  "stateSchema": {
+    "tree": {
+      "type": "object",
+      "description": "The BST represented as a nested node structure",
+      "properties": {
+        "value": { "type": "number" },
+        "left": { "type": "object" },
+        "right": { "type": "object" }
+      }
+    },
+    "currentNode": { "type": "object", "description": "The node currently being examined" },
+    "targetValue": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "traversalPath": { "type": "array", "items": { "type": "number" }, "description": "Path of node values visited during current operation" },
+    "searchResult": { "type": "string", "enum": ["found", "not-found", "pending"] },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Sequential inserts",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 50 }
+      ],
+      "description": "Inserting sorted values produces a degenerate (right-skewed) tree"
+    },
+    {
+      "name": "Balanced inserts",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 25 },
+        { "operation": "insert", "value": 75 },
+        { "operation": "insert", "value": 12 },
+        { "operation": "insert", "value": 37 },
+        { "operation": "insert", "value": 62 },
+        { "operation": "insert", "value": 87 }
+      ],
+      "description": "Inserting values in a balanced order produces a complete BST"
+    },
+    {
+      "name": "Search hit",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 70 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "search", "value": 40 }
+      ],
+      "expectedSearchResult": "found",
+      "expectedTraversalPath": [50, 30, 40]
+    },
+    {
+      "name": "Search miss",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 70 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "search", "value": 35 }
+      ],
+      "expectedSearchResult": "not-found",
+      "expectedTraversalPath": [50, 30, 40]
+    }
+  ]
+}

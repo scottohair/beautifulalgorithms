@@ -1,0 +1,110 @@
+{
+  "id": "insertion-sort",
+  "name": "Insertion Sort",
+  "category": "sorting",
+  "description": "A simple sorting algorithm that builds the final sorted array one element at a time by repeatedly picking the next element and inserting it into its correct position among the previously sorted elements.",
+  "complexity": {
+    "time": {
+      "best": "O(n)",
+      "average": "O(n²)",
+      "worst": "O(n²)"
+    },
+    "space": "O(1)"
+  },
+  "stable": true,
+  "inPlace": true,
+  "pseudocode": [
+    { "line": 0, "text": "procedure insertionSort(A: list)" },
+    { "line": 1, "text": "  n ← length(A)" },
+    { "line": 2, "text": "  for i ← 1 to n-1 do" },
+    { "line": 3, "text": "    key ← A[i]" },
+    { "line": 4, "text": "    j ← i - 1" },
+    { "line": 5, "text": "    while j ≥ 0 and A[j] > key do" },
+    { "line": 6, "text": "      A[j+1] ← A[j]" },
+    { "line": 7, "text": "      j ← j - 1" },
+    { "line": 8, "text": "    A[j+1] ← key" },
+    { "line": 9, "text": "  return A" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing the key with an element in the sorted portion",
+      "highlights": {
+        "indices": ["j", "key"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "shift",
+      "description": "Shifting an element one position to the right",
+      "highlights": {
+        "indices": ["j", "j+1"],
+        "color": "shifting"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting the key into its correct position",
+      "highlights": {
+        "indices": ["j+1"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element is in its final sorted position",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": { "type": "number" },
+    "minLength": 2,
+    "maxLength": 50,
+    "default": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33]
+  },
+  "stateSchema": {
+    "array": { "type": "array", "items": { "type": "number" } },
+    "keyValue": { "type": "number" },
+    "keyIndex": { "type": "number" },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "shiftingIndex": { "type": "number" },
+    "insertIndex": { "type": "number" },
+    "sortedIndices": { "type": "array", "items": { "type": "number" } },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Already sorted",
+      "input": [1, 2, 3, 4, 5],
+      "expected": [1, 2, 3, 4, 5],
+      "expectedStepCount": 4
+    },
+    {
+      "name": "Reverse sorted",
+      "input": [5, 4, 3, 2, 1],
+      "expected": [1, 2, 3, 4, 5],
+      "expectedStepCount": 14
+    },
+    {
+      "name": "Single swap needed",
+      "input": [2, 1],
+      "expected": [1, 2],
+      "expectedStepCount": 2
+    },
+    {
+      "name": "With duplicates",
+      "input": [3, 1, 4, 1, 5],
+      "expected": [1, 1, 3, 4, 5],
+      "expectedStepCount": 9
+    },
+    {
+      "name": "Default input",
+      "input": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33],
+      "expected": [11, 12, 22, 25, 33, 34, 45, 64, 78, 90]
+    }
+  ]
+}

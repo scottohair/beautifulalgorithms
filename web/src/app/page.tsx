@@ -6,6 +6,17 @@ const algorithms = [
     name: 'Sorting',
     items: [
       { id: 'bubble-sort', name: 'Bubble Sort', complexity: 'O(n²)' },
+      { id: 'insertion-sort', name: 'Insertion Sort', complexity: 'O(n²)' },
+      { id: 'selection-sort', name: 'Selection Sort', complexity: 'O(n²)' },
+    ],
+  },
+  {
+    category: 'data-structures',
+    name: 'Data Structures',
+    items: [
+      { id: 'stack', name: 'Stack', complexity: 'O(1)' },
+      { id: 'queue', name: 'Queue', complexity: 'O(1)' },
+      { id: 'bst', name: 'Binary Search Tree', complexity: 'O(log n)' },
     ],
   },
 ];

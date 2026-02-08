@@ -1,0 +1,174 @@
+{
+  "id": "queue",
+  "name": "Queue (Array)",
+  "category": "data-structures",
+  "description": "A First-In-First-Out (FIFO) data structure implemented with an array. Elements are added at the rear and removed from the front. Supports enqueue, dequeue, and peek operations.",
+  "complexity": {
+    "time": {
+      "enqueue": "O(1)",
+      "dequeue": "O(1)",
+      "peek": "O(1)"
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "class Queue" },
+    { "line": 1, "text": "  items ← []" },
+    { "line": 2, "text": "  front ← 0" },
+    { "line": 3, "text": "  rear ← -1" },
+    { "line": 4, "text": "  size ← 0" },
+    { "line": 5, "text": "" },
+    { "line": 6, "text": "  procedure enqueue(value)" },
+    { "line": 7, "text": "    rear ← rear + 1" },
+    { "line": 8, "text": "    items[rear] ← value" },
+    { "line": 9, "text": "    size ← size + 1" },
+    { "line": 10, "text": "" },
+    { "line": 11, "text": "  procedure dequeue()" },
+    { "line": 12, "text": "    if size = 0 then" },
+    { "line": 13, "text": "      error \"Queue underflow\"" },
+    { "line": 14, "text": "    value ← items[front]" },
+    { "line": 15, "text": "    front ← front + 1" },
+    { "line": 16, "text": "    size ← size - 1" },
+    { "line": 17, "text": "    return value" },
+    { "line": 18, "text": "" },
+    { "line": 19, "text": "  procedure peek()" },
+    { "line": 20, "text": "    if size = 0 then" },
+    { "line": 21, "text": "      error \"Queue is empty\"" },
+    { "line": 22, "text": "    return items[front]" }
+  ],
+  "stepTypes": [
+    {
+      "type": "enqueue",
+      "description": "Adding a value to the rear of the queue",
+      "highlights": {
+        "indices": ["rear"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "dequeue",
+      "description": "Removing the front element from the queue",
+      "highlights": {
+        "indices": ["front"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "peek",
+      "description": "Reading the front element without removing it",
+      "highlights": {
+        "indices": ["front"],
+        "color": "reading"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting a specific element in the queue",
+      "highlights": {
+        "indices": ["index"],
+        "color": "highlight"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["enqueue", "dequeue", "peek"]
+        },
+        "value": {
+          "type": "number",
+          "description": "Required for enqueue, ignored for dequeue and peek"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "enqueue", "value": 10 },
+      { "operation": "enqueue", "value": 20 },
+      { "operation": "enqueue", "value": 30 },
+      { "operation": "peek" },
+      { "operation": "dequeue" },
+      { "operation": "enqueue", "value": 40 },
+      { "operation": "dequeue" },
+      { "operation": "dequeue" }
+    ]
+  },
+  "stateSchema": {
+    "queue": { "type": "array", "items": { "type": "number" } },
+    "front": { "type": "number" },
+    "rear": { "type": "number" },
+    "size": { "type": "number" },
+    "currentOperation": { "type": "string" },
+    "operationValue": { "type": "number" },
+    "returnValue": { "type": "number" },
+    "error": { "type": "string" },
+    "highlightIndex": { "type": "number" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Enqueue sequence",
+      "input": [
+        { "operation": "enqueue", "value": 10 },
+        { "operation": "enqueue", "value": 20 },
+        { "operation": "enqueue", "value": 30 }
+      ],
+      "expectedState": {
+        "queue": [10, 20, 30],
+        "front": 0,
+        "rear": 2,
+        "size": 3
+      }
+    },
+    {
+      "name": "Enqueue and dequeue",
+      "input": [
+        { "operation": "enqueue", "value": 10 },
+        { "operation": "enqueue", "value": 20 },
+        { "operation": "enqueue", "value": 30 },
+        { "operation": "dequeue" },
+        { "operation": "dequeue" }
+      ],
+      "expectedState": {
+        "queue": [30],
+        "size": 1
+      },
+      "expectedReturns": [null, null, null, 10, 20]
+    },
+    {
+      "name": "FIFO order verification",
+      "input": [
+        { "operation": "enqueue", "value": 1 },
+        { "operation": "enqueue", "value": 2 },
+        { "operation": "enqueue", "value": 3 },
+        { "operation": "dequeue" },
+        { "operation": "dequeue" },
+        { "operation": "dequeue" }
+      ],
+      "expectedState": {
+        "queue": [],
+        "size": 0
+      },
+      "expectedReturns": [null, null, null, 1, 2, 3]
+    },
+    {
+      "name": "Underflow error",
+      "input": [
+        { "operation": "enqueue", "value": 10 },
+        { "operation": "dequeue" },
+        { "operation": "dequeue" }
+      ],
+      "expectedState": {
+        "queue": [],
+        "size": 0,
+        "error": "Queue underflow"
+      }
+    }
+  ]
+}
