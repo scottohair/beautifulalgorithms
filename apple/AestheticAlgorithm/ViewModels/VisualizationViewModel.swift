@@ -26,9 +26,23 @@ class VisualizationViewModel {
         TrieAlgorithm(),
         BTreeAlgorithm(),
         MinHeapAlgorithm(),
+        BinomialQueueAlgorithm(),
+        FibonacciHeapAlgorithm(),
+        LeftistHeapAlgorithm(),
+        SkewHeapAlgorithm(),
+        DisjointSetsAlgorithm(),
+        HuffmanCodingAlgorithm(),
         DijkstraAlgorithm(),
         PrimAlgorithm(),
-        KruskalAlgorithm()
+        KruskalAlgorithm(),
+        ShellSort(),
+        CountingSort(),
+        FibonacciAlgorithm(),
+        ChangeMakingAlgorithm(),
+        LCSAlgorithm(),
+        NQueensAlgorithm(),
+        FloydWarshallAlgorithm(),
+        TopologicalSortAlgorithm()
     ]
 
     func selectAlgorithm(_ algorithm: any AlgorithmExecutable) {

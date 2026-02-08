@@ -15,6 +15,14 @@ struct AlgorithmListView: View {
         viewModel.availableAlgorithms.filter { $0.category == "graph" }
     }
 
+    private var dpAlgorithms: [any AlgorithmExecutable] {
+        viewModel.availableAlgorithms.filter { $0.category == "dynamic-programming" }
+    }
+
+    private var backtrackingAlgorithms: [any AlgorithmExecutable] {
+        viewModel.availableAlgorithms.filter { $0.category == "backtracking" }
+    }
+
     var body: some View {
         List {
             Section {
@@ -39,6 +47,22 @@ struct AlgorithmListView: View {
                 }
             } header: {
                 sectionHeader("GRAPH")
+            }
+
+            Section {
+                ForEach(dpAlgorithms, id: \.id) { algorithm in
+                    algorithmRow(algorithm)
+                }
+            } header: {
+                sectionHeader("DYNAMIC PROGRAMMING")
+            }
+
+            Section {
+                ForEach(backtrackingAlgorithms, id: \.id) { algorithm in
+                    algorithmRow(algorithm)
+                }
+            } header: {
+                sectionHeader("BACKTRACKING")
             }
         }
         .listStyle(.sidebar)

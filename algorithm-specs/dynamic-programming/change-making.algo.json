@@ -1,0 +1,130 @@
+{
+  "id": "change-making",
+  "name": "Change Making (Coin Change)",
+  "category": "dynamic-programming",
+  "description": "Finds the minimum number of coins needed to make a given amount using dynamic programming. Builds a DP table where each entry dp[i] represents the fewest coins needed to make amount i, iterating over each coin denomination for every sub-amount.",
+  "complexity": {
+    "time": {
+      "worst": "O(n × amount)"
+    },
+    "space": "O(amount)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure coinChange(coins, amount)" },
+    { "line": 1, "text": "  dp ← array of size amount+1, filled with ∞" },
+    { "line": 2, "text": "  dp[0] ← 0" },
+    { "line": 3, "text": "  for i ← 1 to amount do" },
+    { "line": 4, "text": "    for each coin in coins do" },
+    { "line": 5, "text": "      if coin ≤ i then" },
+    { "line": 6, "text": "        dp[i] ← min(dp[i], dp[i - coin] + 1)" },
+    { "line": 7, "text": "  if dp[amount] = ∞ then return -1" },
+    { "line": 8, "text": "  return dp[amount]" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Checking if a coin denomination can be used for the current amount",
+      "highlights": {
+        "indices": ["i", "coin"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Looking up dp[i - coin] to evaluate a candidate solution",
+      "highlights": {
+        "indices": ["i - coin"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Updating dp[i] with a new minimum coin count",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "The minimum coins for this amount is finalized",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting a coin denomination to try",
+      "highlights": {
+        "indices": ["coin"],
+        "color": "selected"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "coins": {
+        "type": "array",
+        "items": { "type": "number" },
+        "description": "Available coin denominations"
+      },
+      "amount": {
+        "type": "number",
+        "description": "The target amount to make change for",
+        "minimum": 0
+      }
+    },
+    "required": ["coins", "amount"],
+    "default": {
+      "coins": [1, 5, 10, 25],
+      "amount": 11
+    }
+  },
+  "stateSchema": {
+    "dp": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "DP table where dp[i] is the minimum coins for amount i"
+    },
+    "coins": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "The available coin denominations"
+    },
+    "currentAmount": { "type": "number", "description": "The sub-amount currently being computed" },
+    "currentCoin": { "type": "number", "description": "The coin denomination currently being evaluated" },
+    "highlightedIndices": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "DP table indices being referenced"
+    },
+    "sortedIndices": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "DP table indices that have been finalized"
+    },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Standard US coins",
+      "input": { "coins": [1, 5, 10, 25], "amount": 11 },
+      "expected": 3,
+      "description": "11 = 10 + 1, so minimum 3 coins is wrong — 11 = 5 + 5 + 1, minimum is 3 coins"
+    },
+    {
+      "name": "Impossible amount",
+      "input": { "coins": [2], "amount": 3 },
+      "expected": -1,
+      "description": "Cannot make 3 with only denomination 2"
+    },
+    {
+      "name": "Zero amount",
+      "input": { "coins": [1, 2, 5], "amount": 0 },
+      "expected": 0,
+      "description": "Zero coins needed for amount 0"
+    }
+  ]
+}

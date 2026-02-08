@@ -1,0 +1,109 @@
+{
+  "id": "fibonacci-dp",
+  "name": "Fibonacci (Dynamic Programming)",
+  "category": "dynamic-programming",
+  "description": "Computes the nth Fibonacci number using a bottom-up dynamic programming (tabulation) approach. Instead of redundant recursive calls, it builds up the solution iteratively by filling a table from the base cases, achieving linear time complexity.",
+  "complexity": {
+    "time": {
+      "best": "O(n)",
+      "average": "O(n)",
+      "worst": "O(n)"
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure fibonacci(n)" },
+    { "line": 1, "text": "  dp ← array of size n+1" },
+    { "line": 2, "text": "  dp[0] ← 0" },
+    { "line": 3, "text": "  dp[1] ← 1" },
+    { "line": 4, "text": "  for i ← 2 to n do" },
+    { "line": 5, "text": "    dp[i] ← dp[i-1] + dp[i-2]" },
+    { "line": 6, "text": "  return dp[n]" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Looking up previously computed values dp[i-1] and dp[i-2]",
+      "highlights": {
+        "indices": ["i-1", "i-2"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Computing the sum of two previous Fibonacci values",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Storing the computed Fibonacci value in the DP table",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Fibonacci value at this index is finalized",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "n": {
+        "type": "number",
+        "description": "The index of the Fibonacci number to compute (0-indexed)",
+        "minimum": 0,
+        "maximum": 30
+      }
+    },
+    "required": ["n"],
+    "default": { "n": 10 }
+  },
+  "stateSchema": {
+    "dp": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "The DP table holding computed Fibonacci values"
+    },
+    "currentIndex": { "type": "number", "description": "The current index being computed" },
+    "highlightedIndices": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Indices currently being referenced or computed"
+    },
+    "sortedIndices": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Indices whose values have been finalized"
+    },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Base case zero",
+      "input": { "n": 0 },
+      "expected": 0,
+      "description": "F(0) = 0, no iteration needed"
+    },
+    {
+      "name": "Small Fibonacci number",
+      "input": { "n": 6 },
+      "expected": 8,
+      "description": "F(6) = 8, computed as 0, 1, 1, 2, 3, 5, 8"
+    },
+    {
+      "name": "Default input",
+      "input": { "n": 10 },
+      "expected": 55,
+      "description": "F(10) = 55, demonstrates iterative table filling"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "id": "shell-sort",
+  "name": "Shell Sort",
+  "category": "sorting",
+  "description": "An optimization of insertion sort that allows the exchange of far-apart elements. It starts by sorting elements far apart from each other using a gap sequence, then progressively reduces the gap until it becomes 1, at which point it performs a standard insertion sort on a nearly sorted array.",
+  "complexity": {
+    "time": {
+      "best": "O(n log n)",
+      "average": "O(n log²n)",
+      "worst": "O(n²)"
+    },
+    "space": "O(1)"
+  },
+  "stable": false,
+  "inPlace": true,
+  "pseudocode": [
+    { "line": 0, "text": "procedure shellSort(A: list)" },
+    { "line": 1, "text": "  n ← length(A)" },
+    { "line": 2, "text": "  gap ← floor(n / 2)" },
+    { "line": 3, "text": "  while gap > 0 do" },
+    { "line": 4, "text": "    for i ← gap to n-1 do" },
+    { "line": 5, "text": "      temp ← A[i]" },
+    { "line": 6, "text": "      j ← i" },
+    { "line": 7, "text": "      while j ≥ gap and A[j - gap] > temp do" },
+    { "line": 8, "text": "        A[j] ← A[j - gap]" },
+    { "line": 9, "text": "        j ← j - gap" },
+    { "line": 10, "text": "      A[j] ← temp" },
+    { "line": 11, "text": "    gap ← floor(gap / 2)" },
+    { "line": 12, "text": "  return A" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing two elements separated by the current gap",
+      "highlights": {
+        "indices": ["j", "j - gap"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Moving an element by the gap distance",
+      "highlights": {
+        "indices": ["j", "j - gap"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element placed in its correct position for the current gap",
+      "highlights": {
+        "indices": ["j"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the current gap value and elements being gap-sorted",
+      "highlights": {
+        "indices": ["i"],
+        "gap": "current gap value",
+        "color": "highlighted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": { "type": "number" },
+    "minLength": 2,
+    "maxLength": 50,
+    "default": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33]
+  },
+  "stateSchema": {
+    "array": { "type": "array", "items": { "type": "number" } },
+    "gap": { "type": "number", "description": "Current gap value in the gap sequence" },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "sortedIndices": { "type": "array", "items": { "type": "number" } },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Already sorted",
+      "input": [1, 2, 3, 4, 5],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Reverse sorted",
+      "input": [5, 4, 3, 2, 1],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Single swap needed",
+      "input": [2, 1],
+      "expected": [1, 2]
+    },
+    {
+      "name": "With duplicates",
+      "input": [3, 1, 4, 1, 5, 9, 2, 6],
+      "expected": [1, 1, 2, 3, 4, 5, 6, 9]
+    },
+    {
+      "name": "Default input",
+      "input": [64, 34, 25, 12, 22, 11, 90, 45, 78, 33],
+      "expected": [11, 12, 22, 25, 33, 34, 45, 64, 78, 90]
+    }
+  ]
+}

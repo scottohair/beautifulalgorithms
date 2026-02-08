@@ -1,0 +1,133 @@
+{
+  "id": "lcs",
+  "name": "Longest Common Subsequence",
+  "category": "dynamic-programming",
+  "description": "Finds the length and content of the longest subsequence common to two sequences using a 2D dynamic programming table. For each pair of characters, if they match the diagonal value is incremented; otherwise the maximum of the left or top cell is taken.",
+  "complexity": {
+    "time": {
+      "worst": "O(m × n)"
+    },
+    "space": "O(m × n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure LCS(X, Y)" },
+    { "line": 1, "text": "  m ← length(X), n ← length(Y)" },
+    { "line": 2, "text": "  dp ← (m+1) × (n+1) table of zeros" },
+    { "line": 3, "text": "  for i ← 1 to m do" },
+    { "line": 4, "text": "    for j ← 1 to n do" },
+    { "line": 5, "text": "      if X[i-1] = Y[j-1] then" },
+    { "line": 6, "text": "        dp[i][j] ← dp[i-1][j-1] + 1" },
+    { "line": 7, "text": "      else" },
+    { "line": 8, "text": "        dp[i][j] ← max(dp[i-1][j], dp[i][j-1])" },
+    { "line": 9, "text": "  return dp[m][n]" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing characters X[i-1] and Y[j-1]",
+      "highlights": {
+        "cell": ["i", "j"],
+        "characters": ["X[i-1]", "Y[j-1]"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Referencing adjacent cells to compute dp[i][j]",
+      "highlights": {
+        "cells": [["i-1", "j-1"], ["i-1", "j"], ["i", "j-1"]],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Writing the computed value into dp[i][j]",
+      "highlights": {
+        "cell": ["i", "j"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Cell dp[i][j] has been finalized",
+      "highlights": {
+        "cell": ["i", "j"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Tracing back to reconstruct the LCS string",
+      "highlights": {
+        "cell": ["i", "j"],
+        "color": "selected"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "sequenceA": {
+        "type": "string",
+        "description": "The first sequence"
+      },
+      "sequenceB": {
+        "type": "string",
+        "description": "The second sequence"
+      }
+    },
+    "required": ["sequenceA", "sequenceB"],
+    "default": {
+      "sequenceA": "ABCBDAB",
+      "sequenceB": "BDCAB"
+    }
+  },
+  "stateSchema": {
+    "dp": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" }
+      },
+      "description": "The 2D DP table of LCS lengths"
+    },
+    "sequenceA": { "type": "string", "description": "The first input sequence" },
+    "sequenceB": { "type": "string", "description": "The second input sequence" },
+    "currentI": { "type": "number", "description": "Current row index in the DP table" },
+    "currentJ": { "type": "number", "description": "Current column index in the DP table" },
+    "highlightedCells": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" },
+        "maxItems": 2
+      },
+      "description": "Cells currently being referenced"
+    },
+    "lcsResult": { "type": "string", "description": "The reconstructed LCS string" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Classic example",
+      "input": { "sequenceA": "ABCBDAB", "sequenceB": "BDCAB" },
+      "expectedLength": 4,
+      "expectedLCS": "BCAB",
+      "description": "LCS of ABCBDAB and BDCAB is BCAB with length 4"
+    },
+    {
+      "name": "No common subsequence",
+      "input": { "sequenceA": "ABC", "sequenceB": "DEF" },
+      "expectedLength": 0,
+      "expectedLCS": "",
+      "description": "Sequences with no characters in common"
+    },
+    {
+      "name": "One sequence is a subsequence of the other",
+      "input": { "sequenceA": "ABCDEF", "sequenceB": "ACE" },
+      "expectedLength": 3,
+      "expectedLCS": "ACE",
+      "description": "ACE is already a subsequence of ABCDEF"
+    }
+  ]
+}

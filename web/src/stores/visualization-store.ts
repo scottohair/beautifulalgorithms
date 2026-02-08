@@ -22,6 +22,14 @@ import { minHeap } from '@/algorithms/data-structures/min-heap';
 import { dijkstra } from '@/algorithms/graph/dijkstra';
 import { prim } from '@/algorithms/graph/prim';
 import { kruskal } from '@/algorithms/graph/kruskal';
+import { shellSort } from '@/algorithms/sorting/shell-sort';
+import { countingSort } from '@/algorithms/sorting/counting-sort';
+import { fibonacciDP } from '@/algorithms/dynamic-programming/fibonacci';
+import { changeMaking } from '@/algorithms/dynamic-programming/change-making';
+import { lcs } from '@/algorithms/dynamic-programming/lcs';
+import { nQueens } from '@/algorithms/backtracking/n-queens';
+import { floydWarshall } from '@/algorithms/graph/floyd-warshall';
+import { topologicalSort } from '@/algorithms/graph/topological-sort';
 
 interface VisualizationState {
   currentAlgorithm: AlgorithmImplementation | null;
@@ -40,6 +48,10 @@ export const useVisualizationStore = create<VisualizationState>((set) => ({
     stack, queue, bst, linkedList, avlTree, hashTable,
     bfs, dfs, dijkstra, prim, kruskal,
     redBlackTree, splayTree, trie, bTree, minHeap,
+    shellSort, countingSort,
+    fibonacciDP, changeMaking, lcs,
+    nQueens,
+    floydWarshall, topologicalSort,
   ],
 
   selectAlgorithm: (algorithm) => set({ currentAlgorithm: algorithm }),

@@ -1,0 +1,184 @@
+{
+  "id": "floyd-warshall",
+  "name": "Floyd-Warshall",
+  "category": "graph",
+  "description": "An all-pairs shortest path algorithm that computes the shortest distances between every pair of vertices in a weighted graph. Uses a 3-nested-loop approach where each intermediate vertex is considered as a potential waypoint, progressively relaxing path distances through a distance matrix.",
+  "complexity": {
+    "time": {
+      "worst": "O(V³)"
+    },
+    "space": "O(V²)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure floydWarshall(graph)" },
+    { "line": 1, "text": "  V ← number of vertices" },
+    { "line": 2, "text": "  dist ← V×V matrix initialized from edge weights" },
+    { "line": 3, "text": "  dist[v][v] ← 0 for all v" },
+    { "line": 4, "text": "  for k ← 0 to V-1 do" },
+    { "line": 5, "text": "    for i ← 0 to V-1 do" },
+    { "line": 6, "text": "      for j ← 0 to V-1 do" },
+    { "line": 7, "text": "        if dist[i][k] + dist[k][j] < dist[i][j] then" },
+    { "line": 8, "text": "          dist[i][j] ← dist[i][k] + dist[k][j]" },
+    { "line": 9, "text": "  return dist" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing the current distance dist[i][j] with the path through vertex k",
+      "highlights": {
+        "cells": [["i", "j"], ["i", "k"], ["k", "j"]],
+        "intermediateVertex": "k",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Examining cells dist[i][k] and dist[k][j] for the current intermediate vertex",
+      "highlights": {
+        "cells": [["i", "k"], ["k", "j"]],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting the intermediate vertex k for the current iteration",
+      "highlights": {
+        "node": "k",
+        "color": "selected"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "All shortest paths through vertices 0..k have been finalized",
+      "highlights": {
+        "node": "k",
+        "color": "visited"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Updating dist[i][j] with a shorter path through vertex k",
+      "highlights": {
+        "cells": [["i", "j"]],
+        "edge": ["i", "j"],
+        "color": "traversing"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "adjacencyMatrix": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "description": "V×V weight matrix where Infinity represents no direct edge"
+      },
+      "vertices": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Labels for each vertex"
+      }
+    },
+    "required": ["adjacencyMatrix", "vertices"],
+    "default": {
+      "adjacencyMatrix": [
+        [0, 3, 8, "Infinity", -4],
+        ["Infinity", 0, "Infinity", 1, 7],
+        ["Infinity", 4, 0, "Infinity", "Infinity"],
+        [2, "Infinity", -5, 0, "Infinity"],
+        ["Infinity", "Infinity", "Infinity", 6, 0]
+      ],
+      "vertices": ["1", "2", "3", "4", "5"]
+    }
+  },
+  "stateSchema": {
+    "dist": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" }
+      },
+      "description": "The current distance matrix"
+    },
+    "vertices": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Vertex labels"
+    },
+    "k": { "type": "number", "description": "Current intermediate vertex index" },
+    "i": { "type": "number", "description": "Current source vertex index" },
+    "j": { "type": "number", "description": "Current destination vertex index" },
+    "highlightedCells": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" },
+        "maxItems": 2
+      },
+      "description": "Matrix cells being compared or updated"
+    },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Small graph with negative edges",
+      "input": {
+        "adjacencyMatrix": [
+          [0, 3, 8, "Infinity", -4],
+          ["Infinity", 0, "Infinity", 1, 7],
+          ["Infinity", 4, 0, "Infinity", "Infinity"],
+          [2, "Infinity", -5, 0, "Infinity"],
+          ["Infinity", "Infinity", "Infinity", 6, 0]
+        ],
+        "vertices": ["1", "2", "3", "4", "5"]
+      },
+      "expectedDist": [
+        [0, 1, -3, 2, -4],
+        [3, 0, -4, 1, -1],
+        [7, 4, 0, 5, 3],
+        [2, -1, -5, 0, -2],
+        [8, 5, 1, 6, 0]
+      ],
+      "description": "Classic CLRS example with negative edge weights (no negative cycles)"
+    },
+    {
+      "name": "Simple triangle graph",
+      "input": {
+        "adjacencyMatrix": [
+          [0, 1, "Infinity"],
+          ["Infinity", 0, 2],
+          [4, "Infinity", 0]
+        ],
+        "vertices": ["A", "B", "C"]
+      },
+      "expectedDist": [
+        [0, 1, 3],
+        [6, 0, 2],
+        [4, 5, 0]
+      ],
+      "description": "Directed triangle where indirect paths are shorter for some pairs"
+    },
+    {
+      "name": "Disconnected pair",
+      "input": {
+        "adjacencyMatrix": [
+          [0, 5, "Infinity", 10],
+          ["Infinity", 0, 3, "Infinity"],
+          ["Infinity", "Infinity", 0, 1],
+          ["Infinity", "Infinity", "Infinity", 0]
+        ],
+        "vertices": ["A", "B", "C", "D"]
+      },
+      "expectedDist": [
+        [0, 5, 8, 9],
+        ["Infinity", 0, 3, 4],
+        ["Infinity", "Infinity", 0, 1],
+        ["Infinity", "Infinity", "Infinity", 0]
+      ],
+      "description": "DAG-like structure where some vertices cannot be reached in reverse"
+    }
+  ]
+}

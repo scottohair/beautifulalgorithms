@@ -11,6 +11,8 @@ const algorithms = [
       { id: 'merge-sort', name: 'Merge Sort', complexity: 'O(n log n)' },
       { id: 'quick-sort', name: 'Quick Sort', complexity: 'O(n log n)' },
       { id: 'heap-sort', name: 'Heap Sort', complexity: 'O(n log n)' },
+      { id: 'shell-sort', name: 'Shell Sort', complexity: 'O(n log²n)' },
+      { id: 'counting-sort', name: 'Counting Sort', complexity: 'O(n+k)' },
     ],
   },
   {
@@ -39,6 +41,24 @@ const algorithms = [
       { id: 'dijkstra', name: "Dijkstra's Algorithm", complexity: 'O((V+E) log V)' },
       { id: 'prim', name: "Prim's Algorithm", complexity: 'O((V+E) log V)' },
       { id: 'kruskal', name: "Kruskal's Algorithm", complexity: 'O(E log E)' },
+      { id: 'floyd-warshall', name: 'Floyd-Warshall', complexity: 'O(V³)' },
+      { id: 'topological-sort', name: 'Topological Sort', complexity: 'O(V+E)' },
+    ],
+  },
+  {
+    category: 'dynamic-programming',
+    name: 'Dynamic Programming',
+    items: [
+      { id: 'fibonacci-dp', name: 'Fibonacci (DP)', complexity: 'O(n)' },
+      { id: 'change-making', name: 'Coin Change', complexity: 'O(n*amount)' },
+      { id: 'lcs', name: 'Longest Common Subsequence', complexity: 'O(m*n)' },
+    ],
+  },
+  {
+    category: 'backtracking',
+    name: 'Backtracking',
+    items: [
+      { id: 'n-queens', name: 'N-Queens', complexity: 'O(n!)' },
     ],
   },
 ];

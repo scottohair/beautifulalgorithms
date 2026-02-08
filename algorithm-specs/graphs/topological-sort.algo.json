@@ -1,0 +1,171 @@
+{
+  "id": "topological-sort",
+  "name": "Topological Sort",
+  "category": "graph",
+  "description": "Produces a linear ordering of vertices in a directed acyclic graph (DAG) such that for every directed edge (u, v), vertex u comes before v. Uses Kahn's algorithm (BFS-based) which repeatedly removes vertices with zero in-degree, appending them to the sorted output.",
+  "complexity": {
+    "time": {
+      "worst": "O(V + E)"
+    },
+    "space": "O(V)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure topologicalSort(graph)" },
+    { "line": 1, "text": "  inDegree ← compute in-degree for each vertex" },
+    { "line": 2, "text": "  queue ← all vertices with inDegree = 0" },
+    { "line": 3, "text": "  result ← empty list" },
+    { "line": 4, "text": "  while queue is not empty do" },
+    { "line": 5, "text": "    u ← queue.dequeue()" },
+    { "line": 6, "text": "    result.append(u)" },
+    { "line": 7, "text": "    for each neighbor v of u do" },
+    { "line": 8, "text": "      inDegree[v] ← inDegree[v] - 1" },
+    { "line": 9, "text": "      if inDegree[v] = 0 then" },
+    { "line": 10, "text": "        queue.enqueue(v)" },
+    { "line": 11, "text": "  if length(result) ≠ number of vertices then" },
+    { "line": 12, "text": "    error: graph has a cycle" },
+    { "line": 13, "text": "  return result" }
+  ],
+  "stepTypes": [
+    {
+      "type": "traverse",
+      "description": "Dequeuing a vertex with zero in-degree and adding it to the result",
+      "highlights": {
+        "node": "current",
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Examining a neighbor and decrementing its in-degree",
+      "highlights": {
+        "node": "neighbor",
+        "edge": ["current", "neighbor"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "A neighbor's in-degree has reached zero, adding it to the queue",
+      "highlights": {
+        "node": "neighbor",
+        "color": "selected"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Vertex has been placed in its final position in the topological order",
+      "highlights": {
+        "node": "current",
+        "color": "visited"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Adding a zero-in-degree vertex to the processing queue",
+      "highlights": {
+        "node": "vertex",
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing an edge from the graph (decrementing in-degree)",
+      "highlights": {
+        "edge": ["current", "neighbor"],
+        "color": "removing"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "adjacencyList": {
+        "type": "object",
+        "description": "Directed acyclic graph as adjacency list mapping node IDs to arrays of neighbor IDs",
+        "additionalProperties": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "required": ["adjacencyList"],
+    "default": {
+      "adjacencyList": {
+        "A": ["C"],
+        "B": ["C", "D"],
+        "C": ["E"],
+        "D": ["F"],
+        "E": ["F"],
+        "F": []
+      }
+    }
+  },
+  "stateSchema": {
+    "graph": {
+      "type": "object",
+      "description": "The adjacency list representation of the directed graph"
+    },
+    "inDegree": {
+      "type": "object",
+      "description": "Map of vertex IDs to their current in-degree",
+      "additionalProperties": { "type": "number" }
+    },
+    "queue": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Queue of vertices with in-degree 0"
+    },
+    "result": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The topological ordering built so far"
+    },
+    "currentNode": { "type": "string" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Simple DAG",
+      "input": {
+        "adjacencyList": {
+          "A": ["C"],
+          "B": ["C", "D"],
+          "C": ["E"],
+          "D": ["F"],
+          "E": ["F"],
+          "F": []
+        }
+      },
+      "expectedOrder": ["A", "B", "C", "D", "E", "F"],
+      "description": "A basic DAG where A and B have no dependencies"
+    },
+    {
+      "name": "Linear chain",
+      "input": {
+        "adjacencyList": {
+          "1": ["2"],
+          "2": ["3"],
+          "3": ["4"],
+          "4": []
+        }
+      },
+      "expectedOrder": ["1", "2", "3", "4"],
+      "description": "A linear dependency chain with only one valid topological order"
+    },
+    {
+      "name": "Course prerequisites",
+      "input": {
+        "adjacencyList": {
+          "Math101": ["Math201", "CS101"],
+          "Math201": ["CS201"],
+          "CS101": ["CS201", "CS102"],
+          "CS102": ["CS301"],
+          "CS201": ["CS301"],
+          "CS301": []
+        }
+      },
+      "expectedOrder": ["Math101", "Math201", "CS101", "CS201", "CS102", "CS301"],
+      "description": "Course prerequisite graph showing valid enrollment order"
+    }
+  ]
+}

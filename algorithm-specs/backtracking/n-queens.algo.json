@@ -1,0 +1,132 @@
+{
+  "id": "n-queens",
+  "name": "N-Queens",
+  "category": "backtracking",
+  "description": "Places N queens on an N×N chessboard such that no two queens threaten each other. Uses backtracking to try placing one queen per row, checking column and diagonal conflicts, and removing queens when a dead end is reached.",
+  "complexity": {
+    "time": {
+      "worst": "O(n!)"
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure nQueens(board, row, n)" },
+    { "line": 1, "text": "  if row = n then" },
+    { "line": 2, "text": "    record solution" },
+    { "line": 3, "text": "    return true" },
+    { "line": 4, "text": "  for col ← 0 to n-1 do" },
+    { "line": 5, "text": "    if isSafe(board, row, col) then" },
+    { "line": 6, "text": "      board[row] ← col" },
+    { "line": 7, "text": "      if nQueens(board, row+1, n) then" },
+    { "line": 8, "text": "        return true" },
+    { "line": 9, "text": "      board[row] ← -1  // backtrack" },
+    { "line": 10, "text": "  return false" }
+  ],
+  "stepTypes": [
+    {
+      "type": "insert",
+      "description": "Placing a queen on the board",
+      "highlights": {
+        "cell": ["row", "col"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing a queen during backtracking",
+      "highlights": {
+        "cell": ["row", "col"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "compare",
+      "description": "Checking if a position is safe (no conflicts with existing queens)",
+      "highlights": {
+        "cell": ["row", "col"],
+        "conflictCells": "array of conflicting positions",
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Examining a candidate column for the current row",
+      "highlights": {
+        "cell": ["row", "col"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Queen is confirmed in its final position as part of a valid solution",
+      "highlights": {
+        "cell": ["row", "col"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "n": {
+        "type": "number",
+        "description": "The size of the board and number of queens to place",
+        "minimum": 1,
+        "maximum": 12
+      }
+    },
+    "required": ["n"],
+    "default": { "n": 4 }
+  },
+  "stateSchema": {
+    "board": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Array where board[row] = col indicates a queen at (row, col), -1 if empty"
+    },
+    "n": { "type": "number", "description": "Board size" },
+    "currentRow": { "type": "number", "description": "The row currently being processed" },
+    "currentCol": { "type": "number", "description": "The column being tested" },
+    "queens": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" },
+        "maxItems": 2
+      },
+      "description": "List of [row, col] positions of currently placed queens"
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" },
+        "maxItems": 2
+      },
+      "description": "Cells that conflict with the current candidate position"
+    },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "4-Queens",
+      "input": { "n": 4 },
+      "expectedSolutions": 2,
+      "expectedFirstSolution": [1, 3, 0, 2],
+      "description": "4×4 board has 2 solutions; first found is typically [1, 3, 0, 2]"
+    },
+    {
+      "name": "5-Queens",
+      "input": { "n": 5 },
+      "expectedSolutions": 10,
+      "expectedFirstSolution": [0, 2, 4, 1, 3],
+      "description": "5×5 board has 10 distinct solutions"
+    },
+    {
+      "name": "8-Queens",
+      "input": { "n": 8 },
+      "expectedSolutions": 92,
+      "description": "The classic 8-Queens problem has 92 distinct solutions"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "id": "counting-sort",
+  "name": "Counting Sort",
+  "category": "sorting",
+  "description": "A non-comparison-based sorting algorithm that works by counting the occurrences of each distinct value, computing cumulative counts to determine positions, and then placing each element into its correct sorted position. Efficient when the range of input values (k) is not significantly larger than the number of elements (n).",
+  "complexity": {
+    "time": {
+      "best": "O(n + k)",
+      "average": "O(n + k)",
+      "worst": "O(n + k)"
+    },
+    "space": "O(k)"
+  },
+  "stable": true,
+  "inPlace": false,
+  "pseudocode": [
+    { "line": 0, "text": "procedure countingSort(A: list)" },
+    { "line": 1, "text": "  k ← max(A)" },
+    { "line": 2, "text": "  count ← array of size k+1, filled with 0" },
+    { "line": 3, "text": "  for each element x in A do" },
+    { "line": 4, "text": "    count[x] ← count[x] + 1" },
+    { "line": 5, "text": "  for i ← 1 to k do" },
+    { "line": 6, "text": "    count[i] ← count[i] + count[i-1]" },
+    { "line": 7, "text": "  output ← array of size length(A)" },
+    { "line": 8, "text": "  for j ← length(A)-1 downto 0 do" },
+    { "line": 9, "text": "    output[count[A[j]] - 1] ← A[j]" },
+    { "line": 10, "text": "    count[A[j]] ← count[A[j]] - 1" },
+    { "line": 11, "text": "  return output" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Reading an element from the input array to determine its count",
+      "highlights": {
+        "indices": ["j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Updating the count array or computing cumulative counts",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Placing an element into its correct position in the output array",
+      "highlights": {
+        "indices": ["position"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element has been placed in its final sorted position",
+      "highlights": {
+        "indices": ["position"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": { "type": "number", "minimum": 0 },
+    "minLength": 2,
+    "maxLength": 50,
+    "default": [4, 2, 2, 8, 3, 3, 1, 7, 5, 6]
+  },
+  "stateSchema": {
+    "inputArray": { "type": "array", "items": { "type": "number" } },
+    "countArray": { "type": "array", "items": { "type": "number" }, "description": "Count of each value" },
+    "outputArray": { "type": "array", "items": { "type": "number" }, "description": "The sorted output array" },
+    "currentIndex": { "type": "number" },
+    "highlightedIndices": { "type": "array", "items": { "type": "number" } },
+    "sortedIndices": { "type": "array", "items": { "type": "number" } },
+    "phase": { "type": "string", "description": "Current phase: counting, cumulative, or placing" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Already sorted",
+      "input": [1, 2, 3, 4, 5],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "Reverse sorted",
+      "input": [5, 4, 3, 2, 1],
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "name": "All same values",
+      "input": [3, 3, 3, 3],
+      "expected": [3, 3, 3, 3]
+    },
+    {
+      "name": "With duplicates",
+      "input": [4, 2, 2, 8, 3, 3, 1],
+      "expected": [1, 2, 2, 3, 3, 4, 8]
+    },
+    {
+      "name": "Default input",
+      "input": [4, 2, 2, 8, 3, 3, 1, 7, 5, 6],
+      "expected": [1, 2, 2, 3, 3, 4, 5, 6, 7, 8]
+    }
+  ]
+}
