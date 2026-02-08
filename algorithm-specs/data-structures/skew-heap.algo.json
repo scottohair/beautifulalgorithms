@@ -1,0 +1,176 @@
+{
+  "id": "skew-heap",
+  "name": "Skew Heap",
+  "category": "data-structures",
+  "description": "A self-adjusting heap-ordered binary tree that is a simpler variant of the leftist heap. The key difference is that skew heaps unconditionally swap left and right children after every merge step, rather than checking ranks. This eliminates the need to store rank information while achieving the same O(log n) amortized bounds. Like leftist heaps, all operations are built on merge: insert merges a single-node tree, and extractMin removes the root and merges the two subtrees.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      },
+      "extractMin": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      },
+      "merge": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure merge(h1, h2)" },
+    { "line": 1, "text": "  if h1 = null then return h2" },
+    { "line": 2, "text": "  if h2 = null then return h1" },
+    { "line": 3, "text": "  if h1.key > h2.key then swap h1, h2" },
+    { "line": 4, "text": "  h1.right ← merge(h1.right, h2)" },
+    { "line": 5, "text": "  swap h1.left and h1.right    // always swap" },
+    { "line": 6, "text": "  return h1" },
+    { "line": 7, "text": "" },
+    { "line": 8, "text": "procedure insert(heap, value)" },
+    { "line": 9, "text": "  newNode ← new Node(value)" },
+    { "line": 10, "text": "  heap ← merge(heap, newNode)" },
+    { "line": 11, "text": "" },
+    { "line": 12, "text": "procedure extractMin(heap)" },
+    { "line": 13, "text": "  if heap = null then return null" },
+    { "line": 14, "text": "  min ← heap.key" },
+    { "line": 15, "text": "  heap ← merge(heap.left, heap.right)" },
+    { "line": 16, "text": "  return min" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing root keys of two subtrees during merge to determine which becomes the new root",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Unconditionally swapping left and right children after each merge step",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Creating a new single-node tree and merging it into the heap",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing the root (minimum element) and merging its subtrees",
+      "highlights": {
+        "indices": ["i"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the current node being processed during recursive merge",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Node is in its correct heap position after merge completes",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "extractMin", "merge"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert (only required for insert operation)"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 15 },
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 25 },
+      { "operation": "insert", "value": 3 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 7 },
+      { "operation": "extractMin" },
+      { "operation": "extractMin" }
+    ]
+  },
+  "stateSchema": {
+    "root": {
+      "type": "object",
+      "description": "The root of the skew heap tree"
+    },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "currentOperation": { "type": "string" },
+    "extractedValue": { "type": "number", "description": "The value returned by the most recent extractMin" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Insert with unconditional child swaps",
+      "input": [
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "insert", "value": 15 }
+      ],
+      "description": "Each insert merges along the right spine and unconditionally swaps children at every visited node, causing the tree shape to change with each operation"
+    },
+    {
+      "name": "Extract min with subtree merge",
+      "input": [
+        { "operation": "insert", "value": 8 },
+        { "operation": "insert", "value": 2 },
+        { "operation": "insert", "value": 14 },
+        { "operation": "insert", "value": 6 },
+        { "operation": "insert", "value": 11 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [2, 6],
+      "description": "Extracting the minimum removes the root and merges left and right subtrees with unconditional swaps at every merge step"
+    },
+    {
+      "name": "Amortized efficiency demonstration",
+      "input": [
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "insert", "value": 1 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [1, 5, 10],
+      "description": "Decreasing insertions followed by extractions demonstrate how unconditional swaps keep the tree approximately balanced over a sequence of operations, achieving O(log n) amortized cost"
+    }
+  ]
+}

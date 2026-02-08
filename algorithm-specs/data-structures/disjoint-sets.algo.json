@@ -1,0 +1,195 @@
+{
+  "id": "disjoint-sets",
+  "name": "Disjoint Sets (Union-Find)",
+  "category": "data-structures",
+  "description": "A data structure that maintains a collection of disjoint (non-overlapping) sets and supports two primary operations: find (which determines which set an element belongs to by returning the set representative) and union (which merges two sets). Uses two key optimizations: union by rank attaches the shorter tree under the taller tree's root, and path compression during find makes every visited node point directly to the root. Together these achieve nearly O(1) amortized time per operation, specifically O(alpha(n)) where alpha is the inverse Ackermann function.",
+  "complexity": {
+    "time": {
+      "makeSet": {
+        "average": "O(1)",
+        "worst": "O(1)"
+      },
+      "find": {
+        "average": "O(α(n))",
+        "worst": "O(log n)"
+      },
+      "union": {
+        "average": "O(α(n))",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure makeSet(x)" },
+    { "line": 1, "text": "  x.parent ← x" },
+    { "line": 2, "text": "  x.rank ← 0" },
+    { "line": 3, "text": "" },
+    { "line": 4, "text": "procedure find(x)" },
+    { "line": 5, "text": "  if x.parent ≠ x then" },
+    { "line": 6, "text": "    x.parent ← find(x.parent)    // path compression" },
+    { "line": 7, "text": "  return x.parent" },
+    { "line": 8, "text": "" },
+    { "line": 9, "text": "procedure union(x, y)" },
+    { "line": 10, "text": "  rootX ← find(x)" },
+    { "line": 11, "text": "  rootY ← find(y)" },
+    { "line": 12, "text": "  if rootX = rootY then return    // already same set" },
+    { "line": 13, "text": "  if rootX.rank < rootY.rank then" },
+    { "line": 14, "text": "    rootX.parent ← rootY" },
+    { "line": 15, "text": "  else if rootX.rank > rootY.rank then" },
+    { "line": 16, "text": "    rootY.parent ← rootX" },
+    { "line": 17, "text": "  else" },
+    { "line": 18, "text": "    rootY.parent ← rootX" },
+    { "line": 19, "text": "    rootX.rank ← rootX.rank + 1" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing ranks of two set representatives to determine union direction",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the current element being examined during find traversal",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Creating a new singleton set with makeSet",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element's parent pointer has been updated (path compression or union complete)",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Following parent pointers from a node toward the root during find",
+      "highlights": {
+        "indices": ["i"],
+        "color": "traversing"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting the root representative of a set",
+      "highlights": {
+        "indices": ["i"],
+        "color": "selected"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["makeSet", "find", "union"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The element for makeSet or find"
+        },
+        "value2": {
+          "type": "number",
+          "description": "The second element for union"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "makeSet", "value": 0 },
+      { "operation": "makeSet", "value": 1 },
+      { "operation": "makeSet", "value": 2 },
+      { "operation": "makeSet", "value": 3 },
+      { "operation": "makeSet", "value": 4 },
+      { "operation": "union", "value": 0, "value2": 1 },
+      { "operation": "union", "value": 2, "value2": 3 },
+      { "operation": "union", "value": 0, "value2": 3 },
+      { "operation": "find", "value": 3 }
+    ]
+  },
+  "stateSchema": {
+    "parent": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Parent array where parent[i] is the parent of element i"
+    },
+    "rank": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Rank array used for union by rank"
+    },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "currentOperation": { "type": "string" },
+    "findResult": { "type": "number", "description": "The representative returned by the most recent find" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Union by rank",
+      "input": [
+        { "operation": "makeSet", "value": 0 },
+        { "operation": "makeSet", "value": 1 },
+        { "operation": "makeSet", "value": 2 },
+        { "operation": "makeSet", "value": 3 },
+        { "operation": "union", "value": 0, "value2": 1 },
+        { "operation": "union", "value": 2, "value2": 3 },
+        { "operation": "union", "value": 0, "value2": 2 }
+      ],
+      "description": "Unions by rank keep trees balanced: union(0,1) and union(2,3) create two rank-1 trees, then union(0,2) creates a rank-2 tree with the shorter tree attached under the taller one"
+    },
+    {
+      "name": "Path compression on find",
+      "input": [
+        { "operation": "makeSet", "value": 0 },
+        { "operation": "makeSet", "value": 1 },
+        { "operation": "makeSet", "value": 2 },
+        { "operation": "makeSet", "value": 3 },
+        { "operation": "makeSet", "value": 4 },
+        { "operation": "union", "value": 0, "value2": 1 },
+        { "operation": "union", "value": 1, "value2": 2 },
+        { "operation": "union", "value": 2, "value2": 3 },
+        { "operation": "union", "value": 3, "value2": 4 },
+        { "operation": "find", "value": 4 }
+      ],
+      "description": "Building a chain via unions, then calling find on the deepest element triggers path compression, flattening the tree by pointing all visited nodes directly to the root"
+    },
+    {
+      "name": "Multiple finds and unions",
+      "input": [
+        { "operation": "makeSet", "value": 0 },
+        { "operation": "makeSet", "value": 1 },
+        { "operation": "makeSet", "value": 2 },
+        { "operation": "makeSet", "value": 3 },
+        { "operation": "makeSet", "value": 4 },
+        { "operation": "makeSet", "value": 5 },
+        { "operation": "union", "value": 0, "value2": 1 },
+        { "operation": "union", "value": 2, "value2": 3 },
+        { "operation": "union", "value": 4, "value2": 5 },
+        { "operation": "find", "value": 1 },
+        { "operation": "find", "value": 3 },
+        { "operation": "union", "value": 1, "value2": 5 },
+        { "operation": "find", "value": 5 }
+      ],
+      "description": "Creates three disjoint sets, performs finds with path compression, then merges sets demonstrating how find results guide subsequent union operations"
+    }
+  ]
+}

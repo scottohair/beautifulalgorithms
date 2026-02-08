@@ -1,0 +1,218 @@
+{
+  "id": "fibonacci-heap",
+  "name": "Fibonacci Heap",
+  "category": "data-structures",
+  "description": "A collection of heap-ordered trees with lazy merging and consolidation. Unlike binomial queues, Fibonacci heaps delay cleanup work until extractMin, achieving O(1) amortized insert and decreaseKey. Trees are stored in a circular doubly-linked root list. Insert adds a new single-node tree to the root list. ExtractMin removes the minimum root, promotes its children, and consolidates trees of equal degree. DecreaseKey cuts the node from its parent (cascading if the parent has already lost a child), placing it in the root list.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(1)",
+        "worst": "O(1)"
+      },
+      "extractMin": {
+        "average": "O(log n)",
+        "worst": "O(n)"
+      },
+      "decreaseKey": {
+        "average": "O(1)",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure insert(heap, value)" },
+    { "line": 1, "text": "  node ← new Node(value)" },
+    { "line": 2, "text": "  add node to root list" },
+    { "line": 3, "text": "  if node.key < heap.min.key then" },
+    { "line": 4, "text": "    heap.min ← node" },
+    { "line": 5, "text": "  heap.n ← heap.n + 1" },
+    { "line": 6, "text": "" },
+    { "line": 7, "text": "procedure extractMin(heap)" },
+    { "line": 8, "text": "  z ← heap.min" },
+    { "line": 9, "text": "  add each child of z to root list" },
+    { "line": 10, "text": "  remove z from root list" },
+    { "line": 11, "text": "  if z = z.right then heap.min ← null" },
+    { "line": 12, "text": "  else" },
+    { "line": 13, "text": "    heap.min ← z.right" },
+    { "line": 14, "text": "    consolidate(heap)" },
+    { "line": 15, "text": "  heap.n ← heap.n - 1" },
+    { "line": 16, "text": "  return z.key" },
+    { "line": 17, "text": "" },
+    { "line": 18, "text": "procedure consolidate(heap)" },
+    { "line": 19, "text": "  A ← array of size D(heap.n) + 1, initialized to null" },
+    { "line": 20, "text": "  for each node w in root list do" },
+    { "line": 21, "text": "    x ← w, d ← x.degree" },
+    { "line": 22, "text": "    while A[d] ≠ null do" },
+    { "line": 23, "text": "      y ← A[d]" },
+    { "line": 24, "text": "      if x.key > y.key then swap x, y" },
+    { "line": 25, "text": "      link y under x" },
+    { "line": 26, "text": "      A[d] ← null, d ← d + 1" },
+    { "line": 27, "text": "    A[d] ← x" },
+    { "line": 28, "text": "  rebuild root list from A and update heap.min" },
+    { "line": 29, "text": "" },
+    { "line": 30, "text": "procedure decreaseKey(heap, node, newKey)" },
+    { "line": 31, "text": "  node.key ← newKey" },
+    { "line": 32, "text": "  p ← node.parent" },
+    { "line": 33, "text": "  if p ≠ null and node.key < p.key then" },
+    { "line": 34, "text": "    cut(heap, node, p)" },
+    { "line": 35, "text": "    cascadingCut(heap, p)" },
+    { "line": 36, "text": "  if node.key < heap.min.key then" },
+    { "line": 37, "text": "    heap.min ← node" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing keys of two nodes during consolidation or cut operations",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Swapping nodes to maintain heap order during tree linking",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Adding a new node to the root list",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing the minimum node from the root list",
+      "highlights": {
+        "indices": ["i"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the current node being examined during consolidation or cascading cut",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Node is in its correct position after consolidation",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "traverse",
+      "description": "Traversing the root list or walking up the tree during cascading cuts",
+      "highlights": {
+        "indices": ["i"],
+        "color": "traversing"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "extractMin", "decreaseKey"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert (for insert) or the new key value (for decreaseKey)"
+        },
+        "nodeIndex": {
+          "type": "number",
+          "description": "The index of the node to decrease (only for decreaseKey)"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 5 },
+      { "operation": "insert", "value": 30 },
+      { "operation": "insert", "value": 15 },
+      { "operation": "extractMin" },
+      { "operation": "decreaseKey", "nodeIndex": 3, "value": 2 },
+      { "operation": "extractMin" }
+    ]
+  },
+  "stateSchema": {
+    "rootList": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "The circular doubly-linked list of tree roots"
+    },
+    "min": {
+      "type": "object",
+      "description": "Pointer to the node with the minimum key"
+    },
+    "n": { "type": "number", "description": "Total number of nodes in the heap" },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "currentOperation": { "type": "string" },
+    "extractedValue": { "type": "number", "description": "The value returned by the most recent extractMin" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Lazy insert and consolidation on extract",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 3 },
+        { "operation": "insert", "value": 15 },
+        { "operation": "insert", "value": 7 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [3],
+      "description": "Five inserts add nodes lazily to the root list; extractMin removes 3 and triggers consolidation, linking trees of equal degree"
+    },
+    {
+      "name": "Decrease key with cascading cut",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 50 },
+        { "operation": "extractMin" },
+        { "operation": "decreaseKey", "nodeIndex": 4, "value": 5 },
+        { "operation": "decreaseKey", "nodeIndex": 3, "value": 2 },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [10, 2],
+      "description": "After consolidation from the first extractMin, decreasing keys triggers cuts and potentially cascading cuts, promoting nodes to the root list"
+    },
+    {
+      "name": "Multiple extract min operations",
+      "input": [
+        { "operation": "insert", "value": 25 },
+        { "operation": "insert", "value": 8 },
+        { "operation": "insert", "value": 42 },
+        { "operation": "insert", "value": 12 },
+        { "operation": "insert", "value": 1 },
+        { "operation": "insert", "value": 35 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [1, 8, 12],
+      "description": "Each extractMin removes the minimum, consolidates the root list, and updates the min pointer; elements are extracted in sorted order"
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "id": "binomial-queue",
+  "name": "Binomial Queue",
+  "category": "data-structures",
+  "description": "A mergeable priority queue composed of a collection of binomial trees. A binomial tree B_k has 2^k nodes and is formed by linking two B_(k-1) trees, making one root the child of the other. The queue maintains at most one binomial tree of each order, analogous to binary number representation. Merge operates like binary addition of tree lists, insert is a merge with a single-node queue, and extractMin finds the minimum root among all trees, removes that tree, and merges its children back into the queue.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(1)",
+        "worst": "O(log n)"
+      },
+      "extractMin": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "merge": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure insert(queue, value)" },
+    { "line": 1, "text": "  newQueue ← makeSingleNodeQueue(value)" },
+    { "line": 2, "text": "  queue ← merge(queue, newQueue)" },
+    { "line": 3, "text": "" },
+    { "line": 4, "text": "procedure merge(q1, q2)" },
+    { "line": 5, "text": "  result ← empty queue" },
+    { "line": 6, "text": "  carry ← null" },
+    { "line": 7, "text": "  for k ← 0 to max order do" },
+    { "line": 8, "text": "    combine trees of order k from q1, q2, carry" },
+    { "line": 9, "text": "    if one tree → place in result" },
+    { "line": 10, "text": "    if two trees → link into carry of order k+1" },
+    { "line": 11, "text": "    if three trees → place one, link other two as carry" },
+    { "line": 12, "text": "  return result" },
+    { "line": 13, "text": "" },
+    { "line": 14, "text": "procedure extractMin(queue)" },
+    { "line": 15, "text": "  find tree with minimum root among all binomial trees" },
+    { "line": 16, "text": "  min ← minimum root value" },
+    { "line": 17, "text": "  remove that tree from queue" },
+    { "line": 18, "text": "  childrenQueue ← reverse children of removed root" },
+    { "line": 19, "text": "  queue ← merge(queue, childrenQueue)" },
+    { "line": 20, "text": "  return min" },
+    { "line": 21, "text": "" },
+    { "line": 22, "text": "procedure linkTrees(t1, t2)" },
+    { "line": 23, "text": "  if t1.root > t2.root then swap t1, t2" },
+    { "line": 24, "text": "  make t2 a child of t1" },
+    { "line": 25, "text": "  t1.order ← t1.order + 1" },
+    { "line": 26, "text": "  return t1" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing roots of two binomial trees during merge or extractMin",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Swapping tree roots to maintain heap order during linking",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a new single-node binomial tree into the queue",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing the tree with the minimum root from the queue",
+      "highlights": {
+        "indices": ["i"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the current tree or node being examined",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Element has been placed in its correct position in the queue",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "extractMin", "merge"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert (only required for insert operation)"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 12 },
+      { "operation": "insert", "value": 7 },
+      { "operation": "insert", "value": 25 },
+      { "operation": "insert", "value": 3 },
+      { "operation": "insert", "value": 18 },
+      { "operation": "insert", "value": 1 },
+      { "operation": "extractMin" },
+      { "operation": "extractMin" }
+    ]
+  },
+  "stateSchema": {
+    "trees": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "The collection of binomial trees in the queue, each with an order and heap-ordered nodes"
+    },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "currentOperation": { "type": "string" },
+    "extractedValue": { "type": "number", "description": "The value returned by the most recent extractMin" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Sequential inserts with tree linking",
+      "input": [
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "insert", "value": 15 }
+      ],
+      "description": "Inserting 4 elements causes binomial tree merges: two B_0 trees link into B_1, then two B_1 trees link into B_2, resulting in a single B_2 tree"
+    },
+    {
+      "name": "Extract min with children reinserted",
+      "input": [
+        { "operation": "insert", "value": 8 },
+        { "operation": "insert", "value": 3 },
+        { "operation": "insert", "value": 12 },
+        { "operation": "insert", "value": 6 },
+        { "operation": "insert", "value": 1 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [1, 3],
+      "description": "Extracting the minimum removes the root with the smallest key; its children are reversed and merged back into the queue"
+    },
+    {
+      "name": "Many inserts then drain",
+      "input": [
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [5, 10, 20],
+      "description": "Six inserts create a binomial queue with trees of varying orders; three extractions return elements in sorted order demonstrating priority queue behavior"
+    }
+  ]
+}

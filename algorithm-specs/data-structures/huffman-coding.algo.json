@@ -1,0 +1,170 @@
+{
+  "id": "huffman-coding",
+  "name": "Huffman Coding",
+  "category": "data-structures",
+  "description": "A greedy algorithm that builds an optimal prefix-free binary code for a set of characters based on their frequencies. A min-priority queue (min-heap) stores nodes sorted by frequency. At each step, the two nodes with the lowest frequencies are extracted, combined into a new internal node whose frequency is their sum, and reinserted into the queue. This process repeats until a single tree remains. Characters with higher frequencies receive shorter bit codes (closer to the root), minimizing the total encoded length.",
+  "complexity": {
+    "time": {
+      "build": {
+        "average": "O(n log n)",
+        "worst": "O(n log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure buildHuffmanTree(chars, freqs)" },
+    { "line": 1, "text": "  Q ← min-priority queue" },
+    { "line": 2, "text": "  for each (char, freq) in (chars, freqs) do" },
+    { "line": 3, "text": "    insert new leaf node(char, freq) into Q" },
+    { "line": 4, "text": "" },
+    { "line": 5, "text": "  while Q.size > 1 do" },
+    { "line": 6, "text": "    left ← extractMin(Q)" },
+    { "line": 7, "text": "    right ← extractMin(Q)" },
+    { "line": 8, "text": "    parent ← new internal node" },
+    { "line": 9, "text": "    parent.freq ← left.freq + right.freq" },
+    { "line": 10, "text": "    parent.left ← left" },
+    { "line": 11, "text": "    parent.right ← right" },
+    { "line": 12, "text": "    insert parent into Q" },
+    { "line": 13, "text": "" },
+    { "line": 14, "text": "  root ← extractMin(Q)" },
+    { "line": 15, "text": "  return root" },
+    { "line": 16, "text": "" },
+    { "line": 17, "text": "procedure generateCodes(node, prefix)" },
+    { "line": 18, "text": "  if node is leaf then" },
+    { "line": 19, "text": "    codes[node.char] ← prefix" },
+    { "line": 20, "text": "    return" },
+    { "line": 21, "text": "  generateCodes(node.left, prefix + '0')" },
+    { "line": 22, "text": "  generateCodes(node.right, prefix + '1')" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing frequencies of nodes in the priority queue to find the two minimums",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Inserting a new node (leaf or internal) into the priority queue",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Extracting the minimum-frequency node from the priority queue",
+      "highlights": {
+        "indices": ["i"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting nodes being combined into a new internal node",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "A leaf node has received its final Huffman code",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    },
+    {
+      "type": "select",
+      "description": "Selecting the two lowest-frequency nodes for combination",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "selected"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "char": {
+          "type": "string",
+          "description": "The character"
+        },
+        "freq": {
+          "type": "number",
+          "description": "The frequency of the character"
+        }
+      },
+      "required": ["char", "freq"]
+    },
+    "minLength": 2,
+    "maxLength": 26,
+    "default": [
+      { "char": "a", "freq": 45 },
+      { "char": "b", "freq": 13 },
+      { "char": "c", "freq": 12 },
+      { "char": "d", "freq": 16 },
+      { "char": "e", "freq": 9 },
+      { "char": "f", "freq": 5 }
+    ]
+  },
+  "stateSchema": {
+    "queue": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "The min-priority queue of Huffman tree nodes sorted by frequency"
+    },
+    "tree": {
+      "type": "object",
+      "description": "The Huffman tree being constructed"
+    },
+    "codes": {
+      "type": "object",
+      "description": "Map from character to its Huffman code (binary string)"
+    },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "currentOperation": { "type": "string" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Classic textbook example",
+      "input": [
+        { "char": "a", "freq": 45 },
+        { "char": "b", "freq": 13 },
+        { "char": "c", "freq": 12 },
+        { "char": "d", "freq": 16 },
+        { "char": "e", "freq": 9 },
+        { "char": "f", "freq": 5 }
+      ],
+      "description": "The classic CLRS example: 'a' (highest frequency) gets a 1-bit code, while 'f' and 'e' (lowest frequencies) get the longest codes, demonstrating optimal prefix-free encoding"
+    },
+    {
+      "name": "Equal frequencies",
+      "input": [
+        { "char": "w", "freq": 10 },
+        { "char": "x", "freq": 10 },
+        { "char": "y", "freq": 10 },
+        { "char": "z", "freq": 10 }
+      ],
+      "description": "When all characters have equal frequency, the resulting Huffman tree is a balanced binary tree where all codes have the same length (2 bits for 4 characters)"
+    },
+    {
+      "name": "Skewed frequency distribution",
+      "input": [
+        { "char": "p", "freq": 100 },
+        { "char": "q", "freq": 1 },
+        { "char": "r", "freq": 2 },
+        { "char": "s", "freq": 3 },
+        { "char": "t", "freq": 4 }
+      ],
+      "description": "Highly skewed frequencies produce a very unbalanced tree: 'p' gets a 1-bit code while rare characters get longer codes, maximizing compression for the common case"
+    }
+  ]
+}

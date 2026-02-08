@@ -30,6 +30,12 @@ const algorithms = [
       { id: 'trie', name: 'Trie', complexity: 'O(m)' },
       { id: 'b-tree', name: 'B-Tree', complexity: 'O(log n)' },
       { id: 'min-heap', name: 'Min Heap', complexity: 'O(log n)' },
+      { id: 'binomial-queue', name: 'Binomial Queue', complexity: 'O(log n)' },
+      { id: 'fibonacci-heap', name: 'Fibonacci Heap', complexity: 'O(1) insert' },
+      { id: 'leftist-heap', name: 'Leftist Heap', complexity: 'O(log n)' },
+      { id: 'skew-heap', name: 'Skew Heap', complexity: 'O(log n)' },
+      { id: 'disjoint-sets', name: 'Disjoint Sets', complexity: 'O(α(n))' },
+      { id: 'huffman-coding', name: 'Huffman Coding', complexity: 'O(n log n)' },
     ],
   },
   {

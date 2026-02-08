@@ -1,0 +1,178 @@
+{
+  "id": "leftist-heap",
+  "name": "Leftist Heap",
+  "category": "data-structures",
+  "description": "A heap-ordered binary tree that satisfies the leftist property: the rank (length of the rightmost path to a null node) of the left child is always greater than or equal to the rank of the right child. This ensures the right spine is always the shortest path, making merge operations efficient by always working along the right spine. All operations are built on merge: insert merges a single-node tree, and extractMin removes the root and merges the left and right subtrees.",
+  "complexity": {
+    "time": {
+      "insert": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "extractMin": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      },
+      "merge": {
+        "average": "O(log n)",
+        "worst": "O(log n)"
+      }
+    },
+    "space": "O(n)"
+  },
+  "pseudocode": [
+    { "line": 0, "text": "procedure merge(h1, h2)" },
+    { "line": 1, "text": "  if h1 = null then return h2" },
+    { "line": 2, "text": "  if h2 = null then return h1" },
+    { "line": 3, "text": "  if h1.key > h2.key then swap h1, h2" },
+    { "line": 4, "text": "  h1.right ← merge(h1.right, h2)" },
+    { "line": 5, "text": "  if rank(h1.left) < rank(h1.right) then" },
+    { "line": 6, "text": "    swap h1.left and h1.right" },
+    { "line": 7, "text": "  h1.rank ← rank(h1.right) + 1" },
+    { "line": 8, "text": "  return h1" },
+    { "line": 9, "text": "" },
+    { "line": 10, "text": "procedure insert(heap, value)" },
+    { "line": 11, "text": "  newNode ← new Node(value, rank=1)" },
+    { "line": 12, "text": "  heap ← merge(heap, newNode)" },
+    { "line": 13, "text": "" },
+    { "line": 14, "text": "procedure extractMin(heap)" },
+    { "line": 15, "text": "  if heap = null then return null" },
+    { "line": 16, "text": "  min ← heap.key" },
+    { "line": 17, "text": "  heap ← merge(heap.left, heap.right)" },
+    { "line": 18, "text": "  return min" }
+  ],
+  "stepTypes": [
+    {
+      "type": "compare",
+      "description": "Comparing root keys of two subtrees during merge to determine which becomes the new root",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "comparing"
+      }
+    },
+    {
+      "type": "swap",
+      "description": "Swapping left and right children to restore the leftist property (rank of left >= rank of right)",
+      "highlights": {
+        "indices": ["i", "j"],
+        "color": "swapping"
+      }
+    },
+    {
+      "type": "insert",
+      "description": "Creating a new single-node tree and merging it into the heap",
+      "highlights": {
+        "indices": ["i"],
+        "color": "inserting"
+      }
+    },
+    {
+      "type": "remove",
+      "description": "Removing the root (minimum element) and merging its subtrees",
+      "highlights": {
+        "indices": ["i"],
+        "color": "removing"
+      }
+    },
+    {
+      "type": "highlight",
+      "description": "Highlighting the current node being processed during recursive merge along the right spine",
+      "highlights": {
+        "indices": ["i"],
+        "color": "highlighted"
+      }
+    },
+    {
+      "type": "sorted",
+      "description": "Node is in its correct heap position after merge completes",
+      "highlights": {
+        "indices": ["i"],
+        "color": "sorted"
+      }
+    }
+  ],
+  "inputSchema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["insert", "extractMin", "merge"]
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to insert (only required for insert operation)"
+        }
+      },
+      "required": ["operation"]
+    },
+    "minLength": 1,
+    "maxLength": 50,
+    "default": [
+      { "operation": "insert", "value": 10 },
+      { "operation": "insert", "value": 5 },
+      { "operation": "insert", "value": 20 },
+      { "operation": "insert", "value": 3 },
+      { "operation": "insert", "value": 15 },
+      { "operation": "insert", "value": 8 },
+      { "operation": "extractMin" },
+      { "operation": "extractMin" }
+    ]
+  },
+  "stateSchema": {
+    "root": {
+      "type": "object",
+      "description": "The root of the leftist heap tree"
+    },
+    "comparingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "swappingIndices": { "type": "array", "items": { "type": "number" }, "maxItems": 2 },
+    "currentOperation": { "type": "string" },
+    "extractedValue": { "type": "number", "description": "The value returned by the most recent extractMin" },
+    "currentLine": { "type": "number" }
+  },
+  "testCases": [
+    {
+      "name": "Insert with leftist property maintenance",
+      "input": [
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 15 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "insert", "value": 25 }
+      ],
+      "description": "Each insert merges along the right spine; children may be swapped to maintain the leftist property where rank(left) >= rank(right)"
+    },
+    {
+      "name": "Extract min merges subtrees",
+      "input": [
+        { "operation": "insert", "value": 7 },
+        { "operation": "insert", "value": 3 },
+        { "operation": "insert", "value": 12 },
+        { "operation": "insert", "value": 9 },
+        { "operation": "insert", "value": 1 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [1, 3],
+      "description": "Extracting the minimum removes the root and merges left and right subtrees recursively along the right spine, swapping children as needed"
+    },
+    {
+      "name": "Right spine swaps on merge",
+      "input": [
+        { "operation": "insert", "value": 30 },
+        { "operation": "insert", "value": 40 },
+        { "operation": "insert", "value": 10 },
+        { "operation": "insert", "value": 50 },
+        { "operation": "insert", "value": 20 },
+        { "operation": "insert", "value": 35 },
+        { "operation": "insert", "value": 5 },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" },
+        { "operation": "extractMin" }
+      ],
+      "expectedExtractions": [5, 10, 20],
+      "description": "Seven inserts build a leftist heap; three extractions demonstrate repeated merge operations along the right spine with child swaps to preserve the leftist invariant"
+    }
+  ]
+}

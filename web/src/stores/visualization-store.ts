@@ -30,6 +30,12 @@ import { lcs } from '@/algorithms/dynamic-programming/lcs';
 import { nQueens } from '@/algorithms/backtracking/n-queens';
 import { floydWarshall } from '@/algorithms/graph/floyd-warshall';
 import { topologicalSort } from '@/algorithms/graph/topological-sort';
+import { binomialQueue } from '@/algorithms/data-structures/binomial-queue';
+import { fibonacciHeap } from '@/algorithms/data-structures/fibonacci-heap';
+import { leftistHeap } from '@/algorithms/data-structures/leftist-heap';
+import { skewHeap } from '@/algorithms/data-structures/skew-heap';
+import { disjointSets } from '@/algorithms/data-structures/disjoint-sets';
+import { huffmanCoding } from '@/algorithms/data-structures/huffman-coding';
 
 interface VisualizationState {
   currentAlgorithm: AlgorithmImplementation | null;
@@ -52,6 +58,7 @@ export const useVisualizationStore = create<VisualizationState>((set) => ({
     fibonacciDP, changeMaking, lcs,
     nQueens,
     floydWarshall, topologicalSort,
+    binomialQueue, fibonacciHeap, leftistHeap, skewHeap, disjointSets, huffmanCoding,
   ],
 
   selectAlgorithm: (algorithm) => set({ currentAlgorithm: algorithm }),
