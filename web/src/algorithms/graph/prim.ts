@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { weightMatrixToEdges, createGraphData } from '@/lib/graph-utils';
 
 export const prim: AlgorithmImplementation = {
   id: 'prim',
@@ -8,15 +9,15 @@ export const prim: AlgorithmImplementation = {
   spaceComplexity: 'O(V)',
   pseudocode: [
     { line: 0, text: "procedure Prim(graph)" },
-    { line: 1, text: '  key[0] \u2190 0, key[v] \u2190 \u221e for all other v' },
-    { line: 2, text: '  inMST[] \u2190 false for all vertices' },
+    { line: 1, text: '  key[0] ← 0, key[v] ← ∞ for all other v' },
+    { line: 2, text: '  inMST[] ← false for all vertices' },
     { line: 3, text: '  while there are vertices not in MST do' },
-    { line: 4, text: '    u \u2190 vertex with minimum key not in MST' },
+    { line: 4, text: '    u ← vertex with minimum key not in MST' },
     { line: 5, text: '    add u to MST' },
     { line: 6, text: '    for each neighbor v of u do' },
     { line: 7, text: '      if v not in MST and weight(u,v) < key[v]' },
-    { line: 8, text: '        key[v] \u2190 weight(u, v)' },
-    { line: 9, text: '        parent[v] \u2190 u' },
+    { line: 8, text: '        key[v] ← weight(u, v)' },
+    { line: 9, text: '        parent[v] ← u' },
     { line: 10, text: '  return MST edges' },
   ],
 
@@ -25,7 +26,6 @@ export const prim: AlgorithmImplementation = {
     const n = input.length;
     if (n === 0) return steps;
 
-    // Build weighted adjacency matrix
     const weights: number[][] = Array.from({ length: n }, () =>
       new Array(n).fill(Infinity)
     );
@@ -42,6 +42,10 @@ export const prim: AlgorithmImplementation = {
       }
     }
 
+    const graphEdges = weightMatrixToEdges(weights, n);
+    const baseGraphData = createGraphData(n, graphEdges, false, [...input]);
+    const activeEdges: GraphEdge[] = [];
+
     const key: number[] = new Array(n).fill(Infinity);
     const inMST: boolean[] = new Array(n).fill(false);
     const parent: number[] = new Array(n).fill(-1);
@@ -50,7 +54,6 @@ export const prim: AlgorithmImplementation = {
 
     key[0] = 0;
 
-    // Initial state
     steps.push({
       type: 'select',
       array: [...key.map(k => k === Infinity ? -1 : k)],
@@ -58,11 +61,11 @@ export const prim: AlgorithmImplementation = {
       secondaryIndices: [],
       sortedIndices: [],
       pseudocodeLine: 1,
-      description: `Initialize: key[0] = 0, all others = \u221e`,
+      description: `Initialize: key[0] = 0, all others = ∞`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     for (let count = 0; count < n; count++) {
-      // Find minimum key vertex not in MST
       let u = -1;
       let minKey = Infinity;
       for (let i = 0; i < n; i++) {
@@ -78,6 +81,7 @@ export const prim: AlgorithmImplementation = {
       mstVertices.push(u);
       if (parent[u] !== -1) {
         totalWeight += weights[parent[u]][u];
+        activeEdges.push({ source: Math.min(parent[u], u), target: Math.max(parent[u], u), weight: weights[parent[u]][u] });
       }
 
       steps.push({
@@ -87,10 +91,10 @@ export const prim: AlgorithmImplementation = {
         secondaryIndices: parent[u] >= 0 ? [parent[u]] : [],
         sortedIndices: [...mstVertices],
         pseudocodeLine: 4,
-        description: `Select vertex ${u} with min key = ${minKey}${parent[u] >= 0 ? `. Edge (${parent[u]}\u2192${u}) added to MST.` : '. Starting vertex.'}`,
+        description: `Select vertex ${u} with min key = ${minKey}${parent[u] >= 0 ? `. Edge (${parent[u]}→${u}) added to MST.` : '. Starting vertex.'}`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Update keys of adjacent vertices
       for (let v = 0; v < n; v++) {
         if (inMST[v] || weights[u][v] === Infinity) continue;
 
@@ -101,7 +105,8 @@ export const prim: AlgorithmImplementation = {
           secondaryIndices: [],
           sortedIndices: [...mstVertices],
           pseudocodeLine: 7,
-          description: `Check edge (${u}\u2192${v}): weight ${weights[u][v]} vs key[${v}] = ${key[v] === Infinity ? '\u221e' : key[v]}`,
+          description: `Check edge (${u}→${v}): weight ${weights[u][v]} vs key[${v}] = ${key[v] === Infinity ? '∞' : key[v]}`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
         if (weights[u][v] < key[v]) {
@@ -116,6 +121,7 @@ export const prim: AlgorithmImplementation = {
             sortedIndices: [...mstVertices],
             pseudocodeLine: 8,
             description: `Update key[${v}] = ${weights[u][v]}, parent[${v}] = ${u}`,
+            graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
           });
         }
       }
@@ -128,10 +134,10 @@ export const prim: AlgorithmImplementation = {
         sortedIndices: [...mstVertices],
         pseudocodeLine: 3,
         description: `Vertex ${u} added to MST. Total MST weight so far: ${totalWeight}`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
     }
 
-    // Final state
     steps.push({
       type: 'sorted',
       array: [...input],
@@ -140,6 +146,7 @@ export const prim: AlgorithmImplementation = {
       sortedIndices: mstVertices,
       pseudocodeLine: 10,
       description: `Prim's MST complete. Total weight: ${totalWeight}. MST vertices order: [${mstVertices.join(', ')}]`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;

@@ -72,6 +72,52 @@ describe('Graph Algorithms', () => {
             expect(steps[i].pseudocodeLine).toBeLessThanOrEqual(maxLine);
           }
         });
+
+        it('should have graphData on every step', () => {
+          for (let i = 0; i < steps.length; i++) {
+            expect(steps[i].graphData).toBeDefined();
+            expect(steps[i].graphData!.nodeCount).toBeGreaterThan(0);
+            expect(Array.isArray(steps[i].graphData!.edges)).toBe(true);
+            expect(typeof steps[i].graphData!.directed).toBe('boolean');
+          }
+        });
+
+        it('should have consistent graph topology across steps', () => {
+          const firstGraph = steps[0].graphData!;
+          for (let i = 1; i < steps.length; i++) {
+            const g = steps[i].graphData!;
+            expect(g.nodeCount).toBe(firstGraph.nodeCount);
+            expect(g.edges.length).toBe(firstGraph.edges.length);
+            expect(g.directed).toBe(firstGraph.directed);
+          }
+        });
+
+        it('should have valid edge references', () => {
+          for (let i = 0; i < steps.length; i++) {
+            const g = steps[i].graphData!;
+            for (const edge of g.edges) {
+              expect(edge.source).toBeGreaterThanOrEqual(0);
+              expect(edge.source).toBeLessThan(g.nodeCount);
+              expect(edge.target).toBeGreaterThanOrEqual(0);
+              expect(edge.target).toBeLessThan(g.nodeCount);
+            }
+            if (g.activeEdges) {
+              for (const edge of g.activeEdges) {
+                expect(edge.source).toBeGreaterThanOrEqual(0);
+                expect(edge.source).toBeLessThan(g.nodeCount);
+                expect(edge.target).toBeGreaterThanOrEqual(0);
+                expect(edge.target).toBeLessThan(g.nodeCount);
+              }
+            }
+          }
+        });
+
+        it('should accumulate active edges over time', () => {
+          const activeCountFirst = steps[0].graphData!.activeEdges?.length ?? 0;
+          const activeCountLast = steps[steps.length - 1].graphData!.activeEdges?.length ?? 0;
+          // Active edges should grow (or stay same if nothing to traverse)
+          expect(activeCountLast).toBeGreaterThanOrEqual(activeCountFirst);
+        });
       });
 
       describe('different input sizes', () => {
@@ -83,6 +129,10 @@ describe('Graph Algorithms', () => {
           expect(steps.length).toBeGreaterThan(0);
           verifyStepTypes(steps);
           verifyStepStructure(steps);
+          // Verify graphData on small inputs too
+          for (const step of steps) {
+            expect(step.graphData).toBeDefined();
+          }
         });
 
         it('should handle larger input', () => {
@@ -92,6 +142,9 @@ describe('Graph Algorithms', () => {
           expect(steps.length).toBeGreaterThan(0);
           verifyStepTypes(steps);
           verifyStepStructure(steps);
+          for (const step of steps) {
+            expect(step.graphData).toBeDefined();
+          }
         });
       });
     });

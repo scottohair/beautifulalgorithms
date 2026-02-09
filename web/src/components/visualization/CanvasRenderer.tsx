@@ -93,7 +93,7 @@ export function CanvasRenderer({ step, width = 800, height = 400 }: CanvasRender
   return (
     <canvas
       ref={canvasRef}
-      style={{ width, height }}
+      style={{ width, height, maxWidth: '100%' }}
       className="block"
     />
   );

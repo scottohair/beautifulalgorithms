@@ -32,7 +32,7 @@ export function PlaybackBar({
   onSetSpeed,
 }: PlaybackBarProps) {
   return (
-    <GlassCard className="px-4 py-3">
+    <GlassCard className="px-3 md:px-4 py-3">
       {/* Progress bar */}
       <div className="w-full h-1 bg-white/10 rounded-full mb-3 overflow-hidden">
         <div
@@ -41,22 +41,26 @@ export function PlaybackBar({
         />
       </div>
 
-      <div className="flex items-center gap-5">
-        {/* Step counter */}
-        <span className="text-xs font-mono text-text-tertiary w-16">
+      <div className="flex items-center gap-2 md:gap-5">
+        {/* Step counter - hidden on small screens */}
+        <span className="hidden sm:block text-xs font-mono text-text-tertiary w-16">
           {currentIndex + 1}/{totalSteps}
         </span>
 
         <div className="flex-1" />
 
-        {/* Controls */}
-        <button onClick={onStepBackward} className="text-text-primary hover:text-accent-cyan transition-colors" title="Step back">
+        {/* Controls - 44px touch targets */}
+        <button
+          onClick={onStepBackward}
+          className="w-11 h-11 flex items-center justify-center rounded-full text-text-primary hover:text-accent-cyan active:text-accent-cyan active:bg-white/[0.06] transition-colors"
+          title="Step back"
+        >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
 
         <button
           onClick={playbackState === 'playing' ? onPause : onPlay}
-          className="text-accent-cyan hover:text-accent-purple transition-colors"
+          className="w-11 h-11 flex items-center justify-center rounded-full text-accent-cyan hover:text-accent-purple active:text-accent-purple active:bg-white/[0.06] transition-colors"
           title={playbackState === 'playing' ? 'Pause' : 'Play'}
         >
           {playbackState === 'playing' ? (
@@ -66,18 +70,26 @@ export function PlaybackBar({
           )}
         </button>
 
-        <button onClick={onStepForward} className="text-text-primary hover:text-accent-cyan transition-colors" title="Step forward">
+        <button
+          onClick={onStepForward}
+          className="w-11 h-11 flex items-center justify-center rounded-full text-text-primary hover:text-accent-cyan active:text-accent-cyan active:bg-white/[0.06] transition-colors"
+          title="Step forward"
+        >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
 
-        <button onClick={onStop} className="text-text-tertiary hover:text-text-primary transition-colors" title="Reset">
+        <button
+          onClick={onStop}
+          className="w-11 h-11 flex items-center justify-center rounded-full text-text-tertiary hover:text-text-primary active:text-text-primary active:bg-white/[0.06] transition-colors"
+          title="Reset"
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
         </button>
 
         <div className="flex-1" />
 
-        {/* Speed */}
-        <div className="flex items-center gap-2">
+        {/* Speed - hidden on xs, shown on sm+ */}
+        <div className="hidden sm:flex items-center gap-2">
           <span className="text-xs font-mono text-text-tertiary">{speed.toFixed(1)}x</span>
           <input
             type="range"

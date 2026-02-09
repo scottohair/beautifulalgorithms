@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { createGraphData } from '@/lib/graph-utils';
 
 export const kruskal: AlgorithmImplementation = {
   id: 'kruskal',
@@ -10,9 +11,9 @@ export const kruskal: AlgorithmImplementation = {
     { line: 0, text: "procedure Kruskal(graph)" },
     { line: 1, text: '  sort all edges by weight' },
     { line: 2, text: '  initialize union-find for each vertex' },
-    { line: 3, text: '  MST \u2190 empty set' },
+    { line: 3, text: '  MST ← empty set' },
     { line: 4, text: '  for each edge (u, v, w) in sorted order' },
-    { line: 5, text: '    if find(u) \u2260 find(v) then' },
+    { line: 5, text: '    if find(u) ≠ find(v) then' },
     { line: 6, text: '      add edge (u, v) to MST' },
     { line: 7, text: '      union(u, v)' },
     { line: 8, text: '    else skip edge (would form cycle)' },
@@ -24,13 +25,13 @@ export const kruskal: AlgorithmImplementation = {
     const n = input.length;
     if (n === 0) return steps;
 
-    // Union-Find data structure
+    // Union-Find
     const parentUF: number[] = Array.from({ length: n }, (_, i) => i);
     const rank: number[] = new Array(n).fill(0);
 
     function find(x: number): number {
       if (parentUF[x] !== x) {
-        parentUF[x] = find(parentUF[x]); // path compression
+        parentUF[x] = find(parentUF[x]);
       }
       return parentUF[x];
     }
@@ -39,7 +40,6 @@ export const kruskal: AlgorithmImplementation = {
       const px = find(x);
       const py = find(y);
       if (px === py) return false;
-      // Union by rank
       if (rank[px] < rank[py]) {
         parentUF[px] = py;
       } else if (rank[px] > rank[py]) {
@@ -51,7 +51,6 @@ export const kruskal: AlgorithmImplementation = {
       return true;
     }
 
-    // Build edge list
     interface Edge {
       u: number;
       v: number;
@@ -69,10 +68,13 @@ export const kruskal: AlgorithmImplementation = {
       }
     }
 
-    // Sort edges by weight
     edges.sort((a, b) => a.weight - b.weight);
 
-    // Display edge weights as array for visualization
+    // Build graph data from edge list
+    const graphEdges: GraphEdge[] = edges.map(e => ({ source: e.u, target: e.v, weight: e.weight }));
+    const baseGraphData = createGraphData(n, graphEdges, false, [...input]);
+    const activeEdges: GraphEdge[] = [];
+
     const edgeWeights = edges.map(e => e.weight);
 
     steps.push({
@@ -83,9 +85,10 @@ export const kruskal: AlgorithmImplementation = {
       sortedIndices: [],
       pseudocodeLine: 1,
       description: `Sorted ${edges.length} edges by weight. Initialize union-find.`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
-    const mstEdges: number[] = [];
+    const mstEdgeIndices: number[] = [];
     const mstVertices = new Set<number>();
     let totalWeight = 0;
 
@@ -99,7 +102,8 @@ export const kruskal: AlgorithmImplementation = {
         secondaryIndices: [],
         sortedIndices: [...mstVertices],
         pseudocodeLine: 5,
-        description: `Consider edge (${u}\u2192${v}) with weight ${weight}. Check if they are in the same component.`,
+        description: `Consider edge (${u}→${v}) with weight ${weight}. Check if they are in the same component.`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
       const rootU = find(u);
@@ -107,10 +111,11 @@ export const kruskal: AlgorithmImplementation = {
 
       if (rootU !== rootV) {
         union(u, v);
-        mstEdges.push(i);
+        mstEdgeIndices.push(i);
         mstVertices.add(u);
         mstVertices.add(v);
         totalWeight += weight;
+        activeEdges.push({ source: u, target: v, weight });
 
         steps.push({
           type: 'insert',
@@ -119,7 +124,8 @@ export const kruskal: AlgorithmImplementation = {
           secondaryIndices: [],
           sortedIndices: [...mstVertices],
           pseudocodeLine: 6,
-          description: `Add edge (${u}\u2192${v}), weight ${weight} to MST. Total weight: ${totalWeight}`,
+          description: `Add edge (${u}→${v}), weight ${weight} to MST. Total weight: ${totalWeight}`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
         steps.push({
@@ -129,11 +135,11 @@ export const kruskal: AlgorithmImplementation = {
           secondaryIndices: [],
           sortedIndices: [...mstVertices],
           pseudocodeLine: 7,
-          description: `Union sets of ${u} and ${v}. MST has ${mstEdges.length} edge(s).`,
+          description: `Union sets of ${u} and ${v}. MST has ${mstEdgeIndices.length} edge(s).`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
-        // Early termination: MST has V-1 edges
-        if (mstEdges.length === n - 1) {
+        if (mstEdgeIndices.length === n - 1) {
           break;
         }
       } else {
@@ -144,12 +150,12 @@ export const kruskal: AlgorithmImplementation = {
           secondaryIndices: [],
           sortedIndices: [...mstVertices],
           pseudocodeLine: 8,
-          description: `Skip edge (${u}\u2192${v}): same component, would form cycle.`,
+          description: `Skip edge (${u}→${v}): same component, would form cycle.`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
       }
     }
 
-    // Final state
     steps.push({
       type: 'sorted',
       array: [...input],
@@ -157,7 +163,8 @@ export const kruskal: AlgorithmImplementation = {
       secondaryIndices: [],
       sortedIndices: [...mstVertices],
       pseudocodeLine: 9,
-      description: `Kruskal's MST complete. ${mstEdges.length} edges, total weight: ${totalWeight}`,
+      description: `Kruskal's MST complete. ${mstEdgeIndices.length} edges, total weight: ${totalWeight}`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;

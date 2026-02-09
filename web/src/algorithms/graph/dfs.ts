@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { adjListToEdges, createGraphData } from '@/lib/graph-utils';
 
 export const dfs: AlgorithmImplementation = {
   id: 'dfs',
@@ -11,7 +12,7 @@ export const dfs: AlgorithmImplementation = {
     { line: 1, text: '  create stack S' },
     { line: 2, text: '  push start onto S' },
     { line: 3, text: '  while S is not empty do' },
-    { line: 4, text: '    v \u2190 pop from S' },
+    { line: 4, text: '    v ← pop from S' },
     { line: 5, text: '    if v is not visited then' },
     { line: 6, text: '      mark v as visited' },
     { line: 7, text: '      process v' },
@@ -26,8 +27,6 @@ export const dfs: AlgorithmImplementation = {
     const n = input.length;
     if (n === 0) return steps;
 
-    // Build adjacency list from input
-    // Create edges based on proximity and value relationships
     const adjList: number[][] = Array.from({ length: n }, () => []);
 
     for (let i = 0; i < n; i++) {
@@ -41,7 +40,10 @@ export const dfs: AlgorithmImplementation = {
       }
     }
 
-    // DFS using an explicit stack (iterative)
+    const edges = adjListToEdges(adjList);
+    const baseGraphData = createGraphData(n, edges, false, [...input]);
+    const activeEdges: GraphEdge[] = [];
+
     const visited: boolean[] = new Array(n).fill(false);
     const visitOrder: number[] = [];
     const stack: number[] = [];
@@ -49,7 +51,6 @@ export const dfs: AlgorithmImplementation = {
     const startNode = 0;
     stack.push(startNode);
 
-    // Show initial state
     steps.push({
       type: 'select',
       array: [...input],
@@ -58,12 +59,12 @@ export const dfs: AlgorithmImplementation = {
       sortedIndices: [],
       pseudocodeLine: 2,
       description: `Start DFS from node ${startNode} (value ${input[startNode]})`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     while (stack.length > 0) {
       const v = stack.pop()!;
 
-      // Show pop from stack
       steps.push({
         type: 'traverse',
         array: [...input],
@@ -72,6 +73,7 @@ export const dfs: AlgorithmImplementation = {
         sortedIndices: [...visitOrder],
         pseudocodeLine: 4,
         description: `Pop node ${v} (value ${input[v]}) from stack. Stack: [${stack.join(', ')}]`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
       if (visited[v]) {
@@ -83,6 +85,7 @@ export const dfs: AlgorithmImplementation = {
           sortedIndices: [...visitOrder],
           pseudocodeLine: 5,
           description: `Node ${v} already visited, skip`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
         continue;
       }
@@ -90,7 +93,18 @@ export const dfs: AlgorithmImplementation = {
       visited[v] = true;
       visitOrder.push(v);
 
-      // Process node
+      // Track DFS tree edge from parent (the last visited node that connects to v)
+      if (visitOrder.length > 1) {
+        // Find the parent: the most recently visited node that has v as neighbor
+        for (let k = visitOrder.length - 2; k >= 0; k--) {
+          const parent = visitOrder[k];
+          if (adjList[parent].includes(v)) {
+            activeEdges.push({ source: Math.min(parent, v), target: Math.max(parent, v) });
+            break;
+          }
+        }
+      }
+
       steps.push({
         type: 'highlight',
         array: [...input],
@@ -99,9 +113,9 @@ export const dfs: AlgorithmImplementation = {
         sortedIndices: [...visitOrder],
         pseudocodeLine: 7,
         description: `Process node ${v} (value ${input[v]})`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Push neighbors in reverse order so that the first neighbor is processed first
       const neighbors = [...adjList[v]].reverse();
       for (const u of neighbors) {
         steps.push({
@@ -112,6 +126,7 @@ export const dfs: AlgorithmImplementation = {
           sortedIndices: [...visitOrder],
           pseudocodeLine: 8,
           description: `Check neighbor ${u} (value ${input[u]}) of node ${v}`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
         if (!visited[u]) {
@@ -125,12 +140,12 @@ export const dfs: AlgorithmImplementation = {
             sortedIndices: [...visitOrder],
             pseudocodeLine: 10,
             description: `Push unvisited node ${u} (value ${input[u]}) onto stack`,
+            graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
           });
         }
       }
     }
 
-    // Final state: all visited
     steps.push({
       type: 'sorted',
       array: [...input],
@@ -138,7 +153,8 @@ export const dfs: AlgorithmImplementation = {
       secondaryIndices: [],
       sortedIndices: visitOrder,
       pseudocodeLine: 3,
-      description: `DFS complete. Visit order: ${visitOrder.join(' \u2192 ')}`,
+      description: `DFS complete. Visit order: ${visitOrder.join(' → ')}`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;

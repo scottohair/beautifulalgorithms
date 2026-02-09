@@ -9,6 +9,20 @@ export type StepType =
   | 'traverse'
   | 'select';
 
+export interface GraphEdge {
+  source: number;
+  target: number;
+  weight?: number;
+}
+
+export interface GraphData {
+  nodeCount: number;
+  edges: GraphEdge[];
+  directed: boolean;
+  activeEdges?: GraphEdge[];
+  nodeLabels?: number[];
+}
+
 export interface AlgorithmStep {
   type: StepType;
   array: number[];
@@ -17,6 +31,7 @@ export interface AlgorithmStep {
   sortedIndices: number[];
   pseudocodeLine: number;
   description: string;
+  graphData?: GraphData;
 }
 
 export interface AlgorithmMeta {

@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { directedAdjListToEdges, createGraphData } from '@/lib/graph-utils';
 
 export const topologicalSort: AlgorithmImplementation = {
   id: 'topological-sort',
@@ -27,18 +28,11 @@ export const topologicalSort: AlgorithmImplementation = {
     const n = input.length;
     if (n === 0) return steps;
 
-    // Build a DAG from input: use index as node id
-    // Create directed edges from smaller-value nodes to larger-value nodes
-    // to guarantee a DAG (no cycles)
     const adjList: number[][] = Array.from({ length: n }, () => []);
     const inDegree: number[] = new Array(n).fill(0);
 
-    // Create edges: for nearby nodes, add directed edge from the one with
-    // smaller input value to the one with larger input value
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < Math.min(i + 3, n); j++) {
-        // Always direct from lower-index to higher-index for a guaranteed DAG
-        // But vary based on values to make it more interesting
         let from: number, to: number;
         if (input[i] <= input[j]) {
           from = i;
@@ -54,11 +48,12 @@ export const topologicalSort: AlgorithmImplementation = {
       }
     }
 
-    // Display in-degree as the array for visualization
-    // We use the input array for display, and in-degree for logic
+    const graphEdges = directedAdjListToEdges(adjList);
+    const baseGraphData = createGraphData(n, graphEdges, true, [...input]);
+    const activeEdges: GraphEdge[] = [];
+
     const displayArray = [...input];
 
-    // Show in-degree computation
     steps.push({
       type: 'highlight',
       array: [...inDegree],
@@ -67,14 +62,13 @@ export const topologicalSort: AlgorithmImplementation = {
       sortedIndices: [],
       pseudocodeLine: 1,
       description: `Computed in-degrees: [${inDegree.join(', ')}]`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
-    // Kahn's algorithm
     const queue: number[] = [];
     const result: number[] = [];
     const sortedIndices: number[] = [];
 
-    // Find all vertices with in-degree 0
     for (let i = 0; i < n; i++) {
       if (inDegree[i] === 0) {
         queue.push(i);
@@ -87,6 +81,7 @@ export const topologicalSort: AlgorithmImplementation = {
           sortedIndices: [],
           pseudocodeLine: 3,
           description: `Enqueue node ${i} (value ${displayArray[i]}) with in-degree 0`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
       }
     }
@@ -99,15 +94,14 @@ export const topologicalSort: AlgorithmImplementation = {
       sortedIndices: [],
       pseudocodeLine: 3,
       description: `Initial queue: [${queue.map(q => `${q}(val=${displayArray[q]})`).join(', ')}]`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
-    // Process queue
     while (queue.length > 0) {
       const v = queue.shift()!;
       result.push(v);
       sortedIndices.push(v);
 
-      // Dequeue
       steps.push({
         type: 'traverse',
         array: [...inDegree],
@@ -116,9 +110,9 @@ export const topologicalSort: AlgorithmImplementation = {
         sortedIndices: [...sortedIndices],
         pseudocodeLine: 5,
         description: `Dequeue node ${v} (value ${displayArray[v]}). Queue: [${queue.join(', ')}]`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Add to result
       steps.push({
         type: 'select',
         array: [...inDegree],
@@ -127,11 +121,12 @@ export const topologicalSort: AlgorithmImplementation = {
         sortedIndices: [...sortedIndices],
         pseudocodeLine: 6,
         description: `Add node ${v} to result. Order so far: [${result.join(' -> ')}]`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Process neighbors
       for (const u of adjList[v]) {
         inDegree[u]--;
+        activeEdges.push({ source: v, target: u });
 
         steps.push({
           type: 'compare',
@@ -141,6 +136,7 @@ export const topologicalSort: AlgorithmImplementation = {
           sortedIndices: [...sortedIndices],
           pseudocodeLine: 8,
           description: `Decrement in-degree of node ${u}: now ${inDegree[u]}`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
         if (inDegree[u] === 0) {
@@ -154,12 +150,12 @@ export const topologicalSort: AlgorithmImplementation = {
             sortedIndices: [...sortedIndices],
             pseudocodeLine: 10,
             description: `Node ${u} in-degree is 0, enqueue it`,
+            graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
           });
         }
       }
     }
 
-    // Check if all vertices were processed (detect cycle)
     const hasCycle = result.length !== n;
 
     steps.push({
@@ -172,6 +168,7 @@ export const topologicalSort: AlgorithmImplementation = {
       description: hasCycle
         ? `Cycle detected! Only ${result.length} of ${n} nodes processed.`
         : `Topological order: ${result.map(r => `${r}(${displayArray[r]})`).join(' -> ')}`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;

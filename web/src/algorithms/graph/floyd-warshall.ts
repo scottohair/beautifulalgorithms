@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { createGraphData } from '@/lib/graph-utils';
 
 export const floydWarshall: AlgorithmImplementation = {
   id: 'floyd-warshall',
@@ -20,40 +21,42 @@ export const floydWarshall: AlgorithmImplementation = {
   generateSteps(input: number[]): AlgorithmStep[] {
     const steps: AlgorithmStep[] = [];
 
-    // Number of vertices derived from input length
     const V = Math.min(Math.max(Math.floor(Math.sqrt(input.length)), 3), 6);
     const INF = 999;
 
-    // Build distance matrix from input values
-    // Flatten: dist[i][j] = dist[i * V + j]
     const dist: number[] = new Array(V * V).fill(INF);
 
-    // Self-distances are 0
     for (let i = 0; i < V; i++) {
       dist[i * V + i] = 0;
     }
 
-    // Create edges from input values
-    // Use input values to determine edge weights between adjacent nodes
+    // Build graph edges for visualization
+    const graphEdges: GraphEdge[] = [];
+
     for (let i = 0; i < V; i++) {
       for (let j = i + 1; j < V; j++) {
         const inputIdx = i * V + j;
         if (inputIdx < input.length) {
-          const weight = (Math.abs(input[inputIdx]) % 9) + 1; // weight 1-9
+          const weight = (Math.abs(input[inputIdx]) % 9) + 1;
           dist[i * V + j] = weight;
-          dist[j * V + i] = weight; // undirected
+          dist[j * V + i] = weight;
+          graphEdges.push({ source: i, target: j, weight });
         } else if (j === i + 1) {
-          // Ensure connected graph: adjacent nodes always have an edge
           const weight = (Math.abs(input[i % input.length]) % 9) + 1;
           dist[i * V + j] = weight;
           dist[j * V + i] = weight;
+          graphEdges.push({ source: i, target: j, weight });
         }
       }
     }
 
+    // Node labels: just 0..V-1
+    const nodeLabels = Array.from({ length: V }, (_, i) => i);
+    const baseGraphData = createGraphData(V, graphEdges, false, nodeLabels);
+    const activeEdges: GraphEdge[] = [];
+
     const idx = (i: number, j: number) => i * V + j;
 
-    // Show initial distance matrix
     steps.push({
       type: 'highlight',
       array: [...dist],
@@ -62,11 +65,11 @@ export const floydWarshall: AlgorithmImplementation = {
       sortedIndices: [],
       pseudocodeLine: 1,
       description: `Initialize ${V}x${V} distance matrix. ∞ = ${INF}`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     const sortedIndices: number[] = [];
 
-    // Floyd-Warshall main loop
     for (let k = 0; k < V; k++) {
       steps.push({
         type: 'pass-complete',
@@ -76,6 +79,7 @@ export const floydWarshall: AlgorithmImplementation = {
         sortedIndices: [...sortedIndices],
         pseudocodeLine: 2,
         description: `Intermediate vertex k = ${k}`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
       for (let i = 0; i < V; i++) {
@@ -87,7 +91,6 @@ export const floydWarshall: AlgorithmImplementation = {
           const kj = idx(k, j);
           const throughK = dist[ik] + dist[kj];
 
-          // Show comparison
           steps.push({
             type: 'compare',
             array: [...dist],
@@ -96,10 +99,16 @@ export const floydWarshall: AlgorithmImplementation = {
             sortedIndices: [...sortedIndices],
             pseudocodeLine: 5,
             description: `dist[${i}][${j}]=${dist[ij] >= INF ? '∞' : dist[ij]} vs dist[${i}][${k}]+dist[${k}][${j}]=${dist[ik] >= INF ? '∞' : dist[ik]}+${dist[kj] >= INF ? '∞' : dist[kj]}=${throughK >= INF ? '∞' : throughK}`,
+            graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
           });
 
           if (throughK < dist[ij]) {
             dist[ij] = throughK;
+
+            // Track the improved path edge
+            if (i < j) {
+              activeEdges.push({ source: i, target: j, weight: throughK });
+            }
 
             steps.push({
               type: 'swap',
@@ -109,12 +118,12 @@ export const floydWarshall: AlgorithmImplementation = {
               sortedIndices: [...sortedIndices],
               pseudocodeLine: 6,
               description: `Update dist[${i}][${j}] = ${throughK} (via vertex ${k})`,
+              graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
             });
           }
         }
       }
 
-      // Mark k-related entries as processed
       for (let i = 0; i < V; i++) {
         const cellIdx = idx(k, i);
         if (!sortedIndices.includes(cellIdx)) sortedIndices.push(cellIdx);
@@ -123,7 +132,6 @@ export const floydWarshall: AlgorithmImplementation = {
       }
     }
 
-    // Mark all as complete
     const allIndices = Array.from({ length: V * V }, (_, i) => i);
     steps.push({
       type: 'sorted',
@@ -133,6 +141,7 @@ export const floydWarshall: AlgorithmImplementation = {
       sortedIndices: allIndices,
       pseudocodeLine: 7,
       description: `Floyd-Warshall complete. All-pairs shortest paths computed.`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;

@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { weightMatrixToEdges, createGraphData } from '@/lib/graph-utils';
 
 export const dijkstra: AlgorithmImplementation = {
   id: 'dijkstra',
@@ -8,15 +9,15 @@ export const dijkstra: AlgorithmImplementation = {
   spaceComplexity: 'O(V)',
   pseudocode: [
     { line: 0, text: "procedure Dijkstra(graph, source)" },
-    { line: 1, text: '  dist[source] \u2190 0' },
-    { line: 2, text: '  for each vertex v: dist[v] \u2190 \u221e' },
+    { line: 1, text: '  dist[source] ← 0' },
+    { line: 2, text: '  for each vertex v: dist[v] ← ∞' },
     { line: 3, text: '  add all vertices to priority queue Q' },
     { line: 4, text: '  while Q is not empty do' },
-    { line: 5, text: '    u \u2190 extract-min from Q' },
+    { line: 5, text: '    u ← extract-min from Q' },
     { line: 6, text: '    for each neighbor v of u do' },
-    { line: 7, text: '      alt \u2190 dist[u] + weight(u, v)' },
+    { line: 7, text: '      alt ← dist[u] + weight(u, v)' },
     { line: 8, text: '      if alt < dist[v] then' },
-    { line: 9, text: '        dist[v] \u2190 alt' },
+    { line: 9, text: '        dist[v] ← alt' },
     { line: 10, text: '        decrease-key v in Q' },
     { line: 11, text: '  return dist' },
   ],
@@ -26,8 +27,6 @@ export const dijkstra: AlgorithmImplementation = {
     const n = input.length;
     if (n === 0) return steps;
 
-    // Build a weighted adjacency matrix from input
-    // Edge weights derived from value differences
     const weights: number[][] = Array.from({ length: n }, () =>
       new Array(n).fill(Infinity)
     );
@@ -37,14 +36,17 @@ export const dijkstra: AlgorithmImplementation = {
       for (let j = i + 1; j < n; j++) {
         const indexDiff = Math.abs(i - j);
         const valueDiff = Math.abs(input[i] - input[j]);
-        // Connect nearby nodes with weight based on value difference
         if (indexDiff <= 2 || valueDiff <= 2) {
-          const w = valueDiff + 1; // ensure positive weight
+          const w = valueDiff + 1;
           weights[i][j] = w;
           weights[j][i] = w;
         }
       }
     }
+
+    const graphEdges = weightMatrixToEdges(weights, n);
+    const baseGraphData = createGraphData(n, graphEdges, false, [...input]);
+    const activeEdges: GraphEdge[] = [];
 
     const source = 0;
     const dist: number[] = new Array(n).fill(Infinity);
@@ -53,7 +55,6 @@ export const dijkstra: AlgorithmImplementation = {
 
     dist[source] = 0;
 
-    // Show initial state
     steps.push({
       type: 'select',
       array: [...dist.map(d => d === Infinity ? -1 : d)],
@@ -61,12 +62,11 @@ export const dijkstra: AlgorithmImplementation = {
       secondaryIndices: [],
       sortedIndices: [],
       pseudocodeLine: 1,
-      description: `Initialize: dist[${source}] = 0, all others = \u221e`,
+      description: `Initialize: dist[${source}] = 0, all others = ∞`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
-    // Simple priority queue using linear scan
     for (let count = 0; count < n; count++) {
-      // Find unvisited vertex with minimum distance
       let u = -1;
       let minDist = Infinity;
       for (let i = 0; i < n; i++) {
@@ -76,7 +76,7 @@ export const dijkstra: AlgorithmImplementation = {
         }
       }
 
-      if (u === -1) break; // remaining vertices unreachable
+      if (u === -1) break;
 
       visited[u] = true;
       finalized.push(u);
@@ -89,9 +89,9 @@ export const dijkstra: AlgorithmImplementation = {
         sortedIndices: [...finalized],
         pseudocodeLine: 5,
         description: `Extract min: vertex ${u} with dist = ${dist[u]}`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Relax edges
       for (let v = 0; v < n; v++) {
         if (visited[v] || weights[u][v] === Infinity) continue;
 
@@ -104,11 +104,13 @@ export const dijkstra: AlgorithmImplementation = {
           secondaryIndices: [],
           sortedIndices: [...finalized],
           pseudocodeLine: 7,
-          description: `Check edge (${u}\u2192${v}): dist[${u}] + ${weights[u][v]} = ${alt} vs dist[${v}] = ${dist[v] === Infinity ? '\u221e' : dist[v]}`,
+          description: `Check edge (${u}→${v}): dist[${u}] + ${weights[u][v]} = ${alt} vs dist[${v}] = ${dist[v] === Infinity ? '∞' : dist[v]}`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
         if (alt < dist[v]) {
           dist[v] = alt;
+          activeEdges.push({ source: Math.min(u, v), target: Math.max(u, v), weight: weights[u][v] });
 
           steps.push({
             type: 'swap',
@@ -118,6 +120,7 @@ export const dijkstra: AlgorithmImplementation = {
             sortedIndices: [...finalized],
             pseudocodeLine: 9,
             description: `Relax: dist[${v}] updated to ${alt}`,
+            graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
           });
         }
       }
@@ -129,11 +132,11 @@ export const dijkstra: AlgorithmImplementation = {
         secondaryIndices: [],
         sortedIndices: [...finalized],
         pseudocodeLine: 4,
-        description: `Vertex ${u} finalized. Distances: [${dist.map(d => d === Infinity ? '\u221e' : d).join(', ')}]`,
+        description: `Vertex ${u} finalized. Distances: [${dist.map(d => d === Infinity ? '∞' : d).join(', ')}]`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
     }
 
-    // Final state
     steps.push({
       type: 'sorted',
       array: [...dist.map(d => d === Infinity ? -1 : d)],
@@ -141,7 +144,8 @@ export const dijkstra: AlgorithmImplementation = {
       secondaryIndices: [],
       sortedIndices: finalized,
       pseudocodeLine: 11,
-      description: `Dijkstra complete. Shortest distances from ${source}: [${dist.map(d => d === Infinity ? '\u221e' : d).join(', ')}]`,
+      description: `Dijkstra complete. Shortest distances from ${source}: [${dist.map(d => d === Infinity ? '∞' : d).join(', ')}]`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;

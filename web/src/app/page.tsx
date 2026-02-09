@@ -71,7 +71,7 @@ const algorithms = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen p-8">
+    <main className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-semibold text-text-primary mb-2 tracking-tight">
           Aesthetic Algorithm
@@ -90,7 +90,7 @@ export default function Home() {
                 <Link
                   key={algo.id}
                   href={`/algorithms/${cat.category}/${algo.id}`}
-                  className="group relative rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 transition-all hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-lg hover:shadow-accent-cyan/5"
+                  className="group relative rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 transition-all hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-lg hover:shadow-accent-cyan/5 active:bg-white/[0.08] active:scale-[0.98]"
                 >
                   <h3 className="text-base font-medium text-text-primary mb-1">
                     {algo.name}

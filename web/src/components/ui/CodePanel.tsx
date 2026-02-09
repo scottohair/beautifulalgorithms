@@ -8,17 +8,17 @@ interface CodePanelProps {
 export function CodePanel({ pseudocode, currentLine }: CodePanelProps) {
   return (
     <GlassCard className="overflow-hidden">
-      <div className="px-4 pt-3 pb-2">
+      <div className="px-4 pt-3 pb-2 hidden md:block">
         <h3 className="text-[11px] font-semibold font-mono tracking-[0.15em] text-text-tertiary uppercase">
           Pseudocode
         </h3>
       </div>
-      <div className="overflow-y-auto max-h-80">
+      <div className="overflow-y-auto overflow-x-auto max-h-60 md:max-h-80">
         {pseudocode.map((item) => (
           <div
             key={item.line}
             className={`
-              flex items-start px-4 py-1 text-[13px] font-mono transition-colors
+              flex items-start px-4 py-1 text-[12px] md:text-[13px] font-mono transition-colors
               ${item.line === currentLine
                 ? 'bg-accent-cyan/10 border-l-2 border-accent-cyan text-text-primary'
                 : 'border-l-2 border-transparent text-text-secondary'

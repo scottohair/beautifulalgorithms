@@ -1,4 +1,5 @@
-import type { AlgorithmImplementation, AlgorithmStep } from '@/lib/types/algorithm';
+import type { AlgorithmImplementation, AlgorithmStep, GraphEdge } from '@/lib/types/algorithm';
+import { adjListToEdges, createGraphData } from '@/lib/graph-utils';
 
 export const bfs: AlgorithmImplementation = {
   id: 'bfs',
@@ -12,7 +13,7 @@ export const bfs: AlgorithmImplementation = {
     { line: 2, text: '  mark start as visited' },
     { line: 3, text: '  enqueue start into Q' },
     { line: 4, text: '  while Q is not empty do' },
-    { line: 5, text: '    v \u2190 dequeue from Q' },
+    { line: 5, text: '    v ← dequeue from Q' },
     { line: 6, text: '    process v' },
     { line: 7, text: '    for each neighbor u of v do' },
     { line: 8, text: '      if u is not visited then' },
@@ -23,20 +24,13 @@ export const bfs: AlgorithmImplementation = {
   generateSteps(input: number[]): AlgorithmStep[] {
     const steps: AlgorithmStep[] = [];
 
-    // Build adjacency list from input
-    // Treat input values as node labels (0 to n-1)
-    // Create edges based on proximity and value relationships
     const n = input.length;
     if (n === 0) return steps;
 
     const adjList: number[][] = Array.from({ length: n }, () => []);
 
-    // Build a connected graph: connect node i to nodes it can reach
-    // Use a simple rule: connect nodes that are within a certain index distance
-    // or that have similar values, ensuring the graph is interesting for BFS
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
-        // Connect adjacent indices and those with values differing by 1 or 2
         const valueDiff = Math.abs(input[i] - input[j]);
         const indexDiff = Math.abs(i - j);
         if (indexDiff <= 2 || valueDiff <= 1) {
@@ -46,7 +40,10 @@ export const bfs: AlgorithmImplementation = {
       }
     }
 
-    // BFS starting from node 0
+    const edges = adjListToEdges(adjList);
+    const baseGraphData = createGraphData(n, edges, false, [...input]);
+    const activeEdges: GraphEdge[] = [];
+
     const visited: boolean[] = new Array(n).fill(false);
     const visitOrder: number[] = [];
     const queue: number[] = [];
@@ -55,7 +52,6 @@ export const bfs: AlgorithmImplementation = {
     visited[startNode] = true;
     queue.push(startNode);
 
-    // Show initial state
     steps.push({
       type: 'select',
       array: [...input],
@@ -64,13 +60,13 @@ export const bfs: AlgorithmImplementation = {
       sortedIndices: [],
       pseudocodeLine: 3,
       description: `Start BFS from node ${startNode} (value ${input[startNode]})`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     while (queue.length > 0) {
       const v = queue.shift()!;
       visitOrder.push(v);
 
-      // Dequeue and process
       steps.push({
         type: 'traverse',
         array: [...input],
@@ -79,9 +75,9 @@ export const bfs: AlgorithmImplementation = {
         sortedIndices: [...visitOrder.slice(0, -1)],
         pseudocodeLine: 5,
         description: `Dequeue node ${v} (value ${input[v]}). Queue: [${queue.map(q => q).join(', ')}]`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Visit node
       steps.push({
         type: 'highlight',
         array: [...input],
@@ -90,9 +86,9 @@ export const bfs: AlgorithmImplementation = {
         sortedIndices: [...visitOrder],
         pseudocodeLine: 6,
         description: `Process node ${v} (value ${input[v]})`,
+        graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
       });
 
-      // Check neighbors
       for (const u of adjList[v]) {
         steps.push({
           type: 'compare',
@@ -102,11 +98,13 @@ export const bfs: AlgorithmImplementation = {
           sortedIndices: [...visitOrder],
           pseudocodeLine: 7,
           description: `Check neighbor ${u} (value ${input[u]}) of node ${v}`,
+          graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
         });
 
         if (!visited[u]) {
           visited[u] = true;
           queue.push(u);
+          activeEdges.push({ source: Math.min(v, u), target: Math.max(v, u) });
 
           steps.push({
             type: 'insert',
@@ -116,12 +114,12 @@ export const bfs: AlgorithmImplementation = {
             sortedIndices: [...visitOrder],
             pseudocodeLine: 10,
             description: `Enqueue unvisited node ${u} (value ${input[u]})`,
+            graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
           });
         }
       }
     }
 
-    // Final state: all visited
     steps.push({
       type: 'sorted',
       array: [...input],
@@ -129,7 +127,8 @@ export const bfs: AlgorithmImplementation = {
       secondaryIndices: [],
       sortedIndices: visitOrder,
       pseudocodeLine: 4,
-      description: `BFS complete. Visit order: ${visitOrder.join(' \u2192 ')}`,
+      description: `BFS complete. Visit order: ${visitOrder.join(' → ')}`,
+      graphData: { ...baseGraphData, activeEdges: [...activeEdges] },
     });
 
     return steps;
