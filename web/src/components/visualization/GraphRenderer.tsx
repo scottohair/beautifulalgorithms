@@ -87,7 +87,19 @@ function edgeKey(e: GraphEdge): string {
 }
 
 export function GraphRenderer({ step, width = 800, height = 400 }: GraphRendererProps) {
-  const graphData = step.graphData!;
+  const graphData = step.graphData;
+
+  if (!graphData) {
+    return (
+      <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height} className="block max-w-full">
+        <text x={width / 2} y={height / 2} fill="rgba(255,255,255,0.3)" fontSize="14"
+          fontFamily="JetBrains Mono, monospace" textAnchor="middle" dominantBaseline="central">
+          No graph data for this step
+        </text>
+      </svg>
+    );
+  }
+
   const { nodeCount, edges, directed, activeEdges = [], nodeLabels } = graphData;
   const { highlightedIndices, sortedIndices, secondaryIndices } = step;
 

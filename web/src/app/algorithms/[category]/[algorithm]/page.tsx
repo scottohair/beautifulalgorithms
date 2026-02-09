@@ -9,6 +9,7 @@ import { PlaybackBar } from '@/components/controls/PlaybackBar';
 import { CodePanel } from '@/components/ui/CodePanel';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { NeonBadge } from '@/components/ui/NeonBadge';
+import type { ViewMode } from '@/lib/types/algorithm';
 import Link from 'next/link';
 
 interface AlgorithmPageProps {
@@ -22,6 +23,14 @@ export default function AlgorithmPage({ params }: AlgorithmPageProps) {
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 400 });
 
   const algorithm = availableAlgorithms.find((a) => a.id === algorithmId);
+  const isGraphCategory = algorithm?.category === 'graph';
+  const availableViewModes: ViewMode[] = isGraphCategory ? ['graph', 'bar'] : ['bar'];
+  const [viewMode, setViewMode] = useState<ViewMode>(isGraphCategory ? 'graph' : 'bar');
+
+  // Reset viewMode when navigating to a different algorithm
+  useEffect(() => {
+    setViewMode(isGraphCategory ? 'graph' : 'bar');
+  }, [algorithmId, isGraphCategory]);
 
   useEffect(() => {
     if (algorithm) {
@@ -50,8 +59,6 @@ export default function AlgorithmPage({ params }: AlgorithmPageProps) {
     );
   }
 
-  const isGraph = engine.currentStep?.graphData != null;
-
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* Header */}
@@ -65,10 +72,46 @@ export default function AlgorithmPage({ params }: AlgorithmPageProps) {
       <div className="flex flex-col md:flex-row p-4 gap-4 md:h-[calc(100vh-52px)]">
         {/* Main visualization */}
         <div className="flex-1 flex flex-col gap-4">
-          <GlassCard className="flex-1 flex items-center justify-center p-3 md:p-5 overflow-hidden">
-            {isGraph ? (
+          <GlassCard className="relative flex-1 flex items-center justify-center p-3 md:p-5 overflow-hidden">
+            {/* View mode toggle — only for graph algorithms */}
+            {availableViewModes.length > 1 && (
+              <div className="absolute top-3 right-3 z-10 flex rounded-full bg-white/[0.06] border border-white/[0.08] p-0.5">
+                <button
+                  onClick={() => setViewMode('graph')}
+                  className={`flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full transition-all ${
+                    viewMode === 'graph'
+                      ? 'bg-accent-cyan/15 text-accent-cyan'
+                      : 'text-text-tertiary hover:text-text-secondary'
+                  }`}
+                  aria-label="Graph view"
+                  title="Graph view"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/>
+                    <circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/>
+                    <path d="M8.5 6H15.5M6 8.5V15.5M8.5 18H15.5M18 8.5V15.5"/>
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode('bar')}
+                  className={`flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full transition-all ${
+                    viewMode === 'bar'
+                      ? 'bg-accent-cyan/15 text-accent-cyan'
+                      : 'text-text-tertiary hover:text-text-secondary'
+                  }`}
+                  aria-label="Bar chart view"
+                  title="Bar chart view"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="6" width="4" height="15" rx="1"/>
+                    <rect x="17" y="3" width="4" height="18" rx="1"/>
+                  </svg>
+                </button>
+              </div>
+            )}
+            {viewMode === 'graph' && engine.currentStep ? (
               <GraphRenderer
-                step={engine.currentStep!}
+                step={engine.currentStep}
                 width={canvasSize.width}
                 height={canvasSize.height}
               />

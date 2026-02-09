@@ -48,3 +48,5 @@ export interface AlgorithmImplementation extends AlgorithmMeta {
 }
 
 export type PlaybackState = 'idle' | 'playing' | 'paused' | 'finished';
+
+export type ViewMode = 'bar' | 'graph';
